@@ -19,14 +19,14 @@
         
         :root {
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(15, 23, 42, 0.9);
+            --glass-bg: rgba(15, 23, 42, 0.85);
         }
 
-        html, body { height: 100%; overflow: hidden; }
+        /* Lock body scroll, let React handle internal scrolling */
+        html, body { height: 100%; overflow: hidden; background-color: #020617; }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #020617; 
             background-image: 
                 radial-gradient(at 0% 0%, rgba(22, 78, 99, 0.3) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(76, 29, 149, 0.3) 0px, transparent 50%),
@@ -39,8 +39,8 @@
         
         .glass-panel { 
             background: var(--glass-bg); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); 
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
             border-radius: 1rem;
@@ -51,12 +51,9 @@
             background-size: 1rem 1rem;
             animation: progress-bar-stripes 1s linear infinite;
         }
-        @keyframes progress-bar-stripes {
-            0% { background-position: 1rem 0; }
-            100% { background-position: 0 0; }
-        }
+        @keyframes progress-bar-stripes { 0% { background-position: 1rem 0; } 100% { background-position: 0 0; } }
 
-        /* Hide Scrollbar but keep functionality */
+        /* Hide Scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -70,7 +67,7 @@
 
         /* Safe Area for Notch Phones */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
     </style>
 </head>
 <body>
@@ -881,7 +878,6 @@
                     else if(step === 'Spray') { req.trCat = ['Sprayer']; req.impCat = []; }
                     else if(step === 'Harvest') {
                         req.trCat = ['Combine'];
-                        // Basic logic for harvesters
                         if(['Cotton'].includes(cropKey)) req.trCat = ['Harvester_Cotton'];
                         if(['Potato'].includes(cropKey)) req.trCat = ['Harvester_Potato'];
                         if(['Beets'].includes(cropKey)) req.trCat = ['Harvester_Beet'];
@@ -892,7 +888,7 @@
                             else if(cropKey === 'Sunflower') req.impCat = ['Header_Sunflower'];
                             else req.impCat = ['Header_Grain'];
                         } else {
-                             req.impCat = []; // Specialized harvesters don't need headers usually in this simplified model
+                             req.impCat = [];
                         }
                     }
                     else if(step === 'Cut') { req.trCat = ['Tractor', 'Mower']; req.impCat = ['Mower']; } 
@@ -1006,12 +1002,6 @@
                 </div>
             );
 
-            // ... [Other render functions: renderMarket, renderJobs, renderLivestock, etc.] ...
-            // Due to space, I'll include the critical ones needed for the app to run.
-            // In a full implementation, you would include all render functions from the previous turn here.
-            // For brevity, I am ensuring the core game loops and renderDash are perfect.
-            // Assuming previous render functions are copy-pasted here.
-            
             const renderMarket = () => (
                 <div className="space-y-6 pb-safe">
                     <h2 className="text-2xl font-bold text-white">Market</h2>
@@ -1088,6 +1078,69 @@
                 </div>
             );
 
+            const renderBank = () => (
+                <div className="space-y-6 pb-safe">
+                    <div className="glass-panel p-6 border-l-4 border-emerald-500">
+                        <div className="text-emerald-400 text-xs font-bold uppercase">Liquid Capital</div>
+                        <div className="text-2xl font-mono text-white">${Math.floor(gameState.money).toLocaleString()}</div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button onClick={()=>loanOp(50000)} className="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold">Borrow 50k</button>
+                        <button onClick={()=>loanOp(-50000)} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold">Repay 50k</button>
+                    </div>
+                </div>
+            );
+            
+            const renderHR = () => (
+                <div className="space-y-6 pb-safe">
+                    <h2 className="text-2xl font-bold text-white">Staff</h2>
+                    {Object.keys(EMP_ROLES).map(r => (
+                        <div key={r} className="glass-panel p-4 flex justify-between items-center">
+                            <div className="text-white font-bold">{EMP_ROLES[r].name}</div>
+                            <button onClick={()=>hire(r)} className="bg-slate-700 text-white px-4 py-2 rounded text-xs">Hire</button>
+                        </div>
+                    ))}
+                    <div className="space-y-2">
+                        {gameState.employees.slice(1).map(e => (
+                            <div key={e.id} className="bg-slate-800 p-3 rounded flex justify-between">
+                                <div className="text-white text-sm">{e.name} ({e.role})</div>
+                                <button onClick={()=>fireEmployee(e.id)} className="text-red-400 text-xs">Fire</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const renderGarage = () => (
+                <div className="space-y-6 pb-safe">
+                    <h2 className="text-2xl font-bold text-white">Garage</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        {gameState.inventory.filter(i => i.hours !== undefined).map(i => (
+                            <div key={i.uid} className="glass-panel p-4">
+                                <div className="text-white font-bold">{getEq(i.itemId)?.name}</div>
+                                <div className="text-xs text-slate-400">Cond: {Math.floor(i.condition)}%</div>
+                                <button onClick={()=>setModal({type:'maintenance', step:'Service', tid:i.uid, tr:i.uid})} className="mt-2 w-full bg-yellow-600 text-white py-2 rounded text-xs font-bold">Service</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+             const renderStorage = () => (
+                <div className="space-y-6 pb-safe">
+                    <h2 className="text-2xl font-bold text-white">Storage</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        {Object.entries(gameState.consumables).map(([k,v]) => (
+                            <div key={k} className="bg-slate-800 p-3 rounded">
+                                <div className="text-slate-400 text-xs uppercase">{k}</div>
+                                <div className="text-white font-bold">{Math.floor(v).toLocaleString()}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+
             // RENDER
             if (isLoading) return <div className="h-screen flex items-center justify-center text-white font-black animate-pulse">CONNECTING...</div>;
             if (!currentUser) return <AuthGate onLogin={()=>{}} />;
@@ -1128,14 +1181,17 @@
 
                     {/* Main Content */}
                     <div className="flex-1 overflow-y-auto relative h-full no-scrollbar">
-                        <div className="max-w-7xl mx-auto p-4 pb-32 lg:p-10 lg:pb-10">
+                        <div className="max-w-7xl mx-auto p-4 pb-40 lg:p-10 lg:pb-10">
                             {view === 'dashboard' && renderDash()}
                             {view === 'market' && renderMarket()}
                             {view === 'jobs' && renderJobs()}
                             {view === 'livestock' && renderLive()}
                             {view === 'store' && renderStore()}
                             {view === 'realestate' && renderReal()}
-                            {/* Add other views as needed */}
+                            {view === 'garage' && renderGarage()}
+                            {view === 'bank' && renderBank()}
+                            {view === 'hr' && renderHR()}
+                            {view === 'storage' && renderStorage()}
                         </div>
                     </div>
                     
