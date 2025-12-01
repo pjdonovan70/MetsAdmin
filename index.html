@@ -140,6 +140,71 @@
         const TAX_PER_ACRE = 25;
 
         const CROPS = { 'Corn': { name: 'Corn', color: 'bg-yellow-500', plantMonths: [3, 4, 5], steps: ['Primary Tillage', 'Lime', 'Fertilizer', 'Secondary Tillage', 'Plant', 'Harvest'], inputs: {seed:'seed_corn',seedRate:0.4,fert:0.2,lime:1}, equip:['Planter','Header_Corn'], yield:180, price:4.25 }, 'Soy': { name: 'Soy', color: 'bg-green-600', plantMonths: [4, 5, 6], steps: ['Primary Tillage', 'Lime', 'Secondary Tillage', 'Plant', 'Spray', 'Harvest'], inputs: {seed:'seed_soy',seedRate:1.0,fert:0,lime:0.5}, equip:['Planter','Header_Grain'], yield:55, price:11.40 }, 'Wheat': { name: 'Wheat', color: 'bg-amber-600', plantMonths: [8, 9, 10, 11], steps: ['Primary Tillage', 'Fertilizer', 'Secondary Tillage', 'Plant', 'Harvest'], inputs: {seed:'seed_wheat',seedRate:2.0,fert:0.15,lime:0}, equip:['Drill','Header_Grain'], yield:85, price:5.60, byproduct:'straw', byYield:1.5 }, 'Hay': { name: 'Alfalfa', color: 'bg-emerald-700', plantMonths: [3, 4, 8], steps: ['Primary Tillage', 'Lime', 'Secondary Tillage', 'Plant', 'Cut', 'Tedder', 'Bale'], inputs: {seed:'seed_hay',seedRate:0.5,fert:0.1,lime:1.5}, equip:['Drill','Mower','Baler'], yield:6, price:180 }, 'Cotton': { name: 'Cotton', color: 'bg-slate-200', plantMonths: [4, 5], steps: ['Primary Tillage', 'Fertilizer', 'Secondary Tillage', 'Plant', 'Spray', 'Harvest'], inputs: { seed: 'seed_cotton', seedRate: 0.2, fert: 0.25, lime:1 }, equip: ['Planter', 'Harvester_Cotton'], yield: 3, price: 85.00 }, 'Rice': { name: 'Rice', color: 'bg-cyan-700', plantMonths: [3, 5], steps: ['Primary Tillage', 'Fertilizer', 'Plant', 'Spray', 'Harvest'], inputs: { seed: 'seed_rice', seedRate: 1.5, fert: 0.4, lime:0 }, equip: ['Drill', 'Header_Grain'], yield: 160, price: 6.80 }, 'Potato': { name: 'Potatoes', color: 'bg-yellow-800', plantMonths: [3, 4], steps: ['Primary Tillage', 'De-Stone', 'Plant', 'Hilling', 'Spray', 'Harvest'], inputs: {seed:'seed_potato',seedRate:20,fert:0.5,lime:0}, equip:['Planter_Potato','Harvester_Potato'], yield:450, price:9.50 }, 'Peanuts': { name: 'Peanuts', color: 'bg-orange-800', plantMonths: [4, 5], steps: ['Tillage', 'Lime', 'Plant', 'Digging', 'Harvest'], inputs: {seed:'seed_peanut',seedRate:1,fert:0.2,lime:0.8}, equip:['Planter','Harvester_Peanut'], yield:4000, price:0.25 }, 'Beets': { name: 'Sugar Beets', color: 'bg-pink-900', plantMonths: [3, 4], steps: ['Tillage', 'Fertilizer', 'Plant', 'Harvest'], inputs: {seed:'seed_beet',seedRate:0.5,fert:0.4,lime:1}, equip:['Planter','Harvester_Beet'], yield:30, price:45.00 }, 'Canola': { name: 'Canola', color: 'bg-yellow-400', plantMonths: [7, 8], steps: ['Tillage', 'Fertilizer', 'Plant', 'Harvest'], inputs: {seed:'seed_canola',seedRate:0.3,fert:0.3,lime:0.5}, equip:['Drill','Header_Grain'], yield:45, price:13.50 }, 'Oats': { name: 'Oats', color: 'bg-amber-200', plantMonths: [2, 3], steps: ['Tillage', 'Plant', 'Harvest'], inputs: {seed:'seed_oats',seedRate:3,fert:0.1,lime:0}, equip:['Drill','Header_Grain'], yield:90, price:3.80 }, 'Barley': { name: 'Barley', color: 'bg-amber-300', plantMonths: [8, 10], steps: ['Tillage', 'Plant', 'Harvest'], inputs: {seed:'seed_barley',seedRate:2.5,fert:0.15,lime:0}, equip:['Drill','Header_Grain'], yield:80, price:5.10 }, 'Sorghum': { name: 'Sorghum', color: 'bg-orange-600', plantMonths: [4, 6], steps: ['Tillage', 'Fertilizer', 'Plant', 'Harvest'], inputs: {seed:'seed_sorghum',seedRate:0.4,fert:0.2,lime:0}, equip:['Planter','Header_Grain'], yield:110, price:6.20 }, 'Sunflower': { name: 'Sunflower', color: 'bg-yellow-300', plantMonths: [4, 6], steps: ['Tillage', 'Plant', 'Harvest'], inputs: {seed:'seed_sunflower',seedRate:0.3,fert:0.2,lime:0}, equip:['Planter','Header_Sunflower'], yield:1800, price:0.22 } };
+
+        // --- MISSING CONSTANTS ADDED HERE ---
+        const EQUIPMENT = [
+            // Tractors
+            { id: 'tr_s', name: 'Utility Tractor', cat: 'Tractor', cost: 45000 },
+            { id: 'tr_l', name: 'Row Crop Tractor', cat: 'Tractor', cost: 165000 },
+            { id: 'tr_xl', name: 'Articulated Tractor', cat: 'Tractor', cost: 350000 },
+            { id: 'truck_p', name: 'Pickup Truck', cat: 'Truck', cost: 45000 },
+            { id: 'truck_s', name: 'Semi Truck', cat: 'Tractor', cost: 120000 },
+            { id: 'skid', name: 'Skid Steer', cat: 'SkidSteer', cost: 35000 },
+            { id: 'snow_plow', name: 'Snow Plow Truck', cat: 'Snow Plow', cost: 65000 },
+            // Harvesters
+            { id: 'comb_s', name: 'Combine (Small)', cat: 'Combine', cost: 180000 },
+            { id: 'comb_l', name: 'Combine (Large)', cat: 'Combine', cost: 420000 },
+            { id: 'harv_cot', name: 'Cotton Picker', cat: 'Harvester_Cotton', cost: 550000 },
+            { id: 'harv_pot', name: 'Potato Harvester', cat: 'Harvester_Potato', cost: 250000 },
+            { id: 'harv_beet', name: 'Beet Harvester', cat: 'Harvester_Beet', cost: 350000 },
+            { id: 'harv_pea', name: 'Peanut Combine', cat: 'Harvester_Peanut', cost: 280000 },
+            // Implements
+            { id: 'plow_s', name: 'Moldboard Plow', cat: 'Plow', cost: 15000 },
+            { id: 'ripper', name: 'Deep Ripper', cat: 'Ripper', cost: 22000 },
+            { id: 'cult_s', name: 'Cultivator', cat: 'Cultivator', cost: 12000 },
+            { id: 'stone', name: 'De-Stoner', cat: 'De-Stoner', cost: 35000 },
+            { id: 'dig_pea', name: 'Peanut Digger', cat: 'Digger_Peanut', cost: 45000 },
+            { id: 'plant_s', name: 'Planter (6-Row)', cat: 'Planter', cost: 25000 },
+            { id: 'plant_l', name: 'Planter (24-Row)', cat: 'Planter', cost: 95000 },
+            { id: 'drill_s', name: 'Grain Drill', cat: 'Drill', cost: 18000 },
+            { id: 'drill_air', name: 'Air Seeder', cat: 'Drill', cost: 110000 },
+            { id: 'plant_pot', name: 'Potato Planter', cat: 'Planter_Potato', cost: 45000 },
+            { id: 'spread_l', name: 'Lime/Fert Spreader', cat: 'Spreader', cost: 28000 },
+            { id: 'spray_sp', name: 'Self-Propelled Sprayer', cat: 'Sprayer', cost: 220000 },
+            { id: 'head_c', name: 'Corn Header', cat: 'Header_Corn', cost: 35000 },
+            { id: 'head_g', name: 'Grain Header', cat: 'Header_Grain', cost: 28000 },
+            { id: 'head_sf', name: 'Sunflower Header', cat: 'Header_Sunflower', cost: 32000 },
+            { id: 'mower', name: 'Mower Conditioner', cat: 'Mower', cost: 22000 },
+            { id: 'tedder', name: 'Tedder', cat: 'Tedder', cost: 8000 },
+            { id: 'baler', name: 'Round Baler', cat: 'Baler', cost: 35000 },
+            { id: 'trail_s', name: 'Grain Cart', cat: 'Trailer', cost: 35000 },
+            { id: 'trail_l', name: 'Semi Hopper Trailer', cat: 'Trailer', cost: 55000 },
+            { id: 'mixer', name: 'TMR Mixer', cat: 'Mixer', cost: 42000 },
+            { id: 'tanker', name: 'Water Tanker', cat: 'Tanker', cost: 15000 },
+            { id: 'straw_p', name: 'Straw Blower', cat: 'Processor', cost: 18000 },
+            { id: 'washer', name: 'Pressure Washer', cat: 'Washer', cost: 2500 },
+            { id: 'mower_r', name: 'Riding Mower', cat: 'LawnMower', cost: 5000 }
+        ];
+
+        const SUPPLIES = {
+            'fert': 850,
+            'lime': 150,
+            'seed_corn': 180,
+            'seed_soy': 60,
+            'seed_wheat': 45,
+            'seed_hay': 80,
+            'seed_cotton': 220,
+            'seed_rice': 90,
+            'seed_potato': 60,
+            'seed_peanut': 110,
+            'seed_beet': 140,
+            'seed_canola': 95,
+            'seed_oats': 40,
+            'seed_barley': 45,
+            'seed_sorghum': 55,
+            'seed_sunflower': 75
+        };
+
         const BUILDINGS = { 
             'shed_s': { name: 'Small Machine Shed', cost: 65000, category: 'Storage', type: 'Shed', capacity: 5, buildTime: 14 * DAY_MS }, 
             'shed_l': { name: 'Large Machine Shed', cost: 150000, category: 'Storage', type: 'Shed', capacity: 15, buildTime: 30 * DAY_MS }, 
