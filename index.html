@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jersey Roots | v27.1 (Connected)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jersey Roots | v27.2 (Mobile)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -18,7 +18,7 @@
         
         :root {
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-bg: rgba(15, 23, 42, 0.85); /* Slightly darker for better mobile contrast */
         }
 
         body { 
@@ -29,7 +29,7 @@
                 radial-gradient(at 100% 0%, rgba(76, 29, 149, 0.3) 0px, transparent 50%),
                 url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
             color: #e2e8f0;
-            overflow-y: scroll;
+            overflow: hidden; /* App handles scrolling */
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
@@ -42,17 +42,24 @@
             border-radius: 1rem;
             transition: transform 0.2s, border-color 0.2s;
         }
-        .glass-panel:hover { border-color: rgba(255,255,255,0.15); }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
 
         .btn-modern {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.2s;
         }
-        .btn-modern:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        .btn-modern:active {
+            transform: scale(0.98);
         }
 
         .progress-bar-striped {
@@ -65,13 +72,12 @@
             100% { background-position: 0 0; }
         }
 
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
         .snow-bg { background-color: #f1f5f9; background-image: url("https://www.transparenttextures.com/patterns/snow.png"); color: #0f172a; }
-        .snow-bg .glass-panel { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0,0,0,0.1); color: #0f172a; }
+        .snow-bg .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); color: #0f172a; }
         .snow-bg .text-white { color: #0f172a !important; }
         .snow-bg .text-slate-400 { color: #64748b !important; }
     </style>
@@ -199,8 +205,8 @@
             });
             const missing = available.length === 0;
             return (
-                <div>
-                    <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">
+                <div className="mb-2">
+                    <label className="text-xs text-slate-500 uppercase font-bold mb-1 block">
                         {label} <span className="text-slate-600">({categories.join('/')})</span>
                     </label>
                     <select 
@@ -933,33 +939,33 @@
             // RENDERERS
             const renderDash = () => (
                 <div className={`space-y-6 ${gameState.snowLevel>0?'snow-bg':''} ${gameState.weather==='Rain'?'rain-bg':''}`}>
-                    <div className="flex justify-between items-center glass-panel p-6 bg-gradient-to-r from-blue-900/40 to-slate-900/40 border-b border-white/5">
-                        <div className="flex gap-6 items-center">
-                            <div className="p-3 bg-blue-500/20 rounded-xl">
-                                <Icons.Clock className="w-8 h-8 text-blue-400" />
+                    <div className="flex flex-col lg:flex-row justify-between items-center glass-panel p-4 lg:p-6 bg-gradient-to-r from-blue-900/40 to-slate-900/40 border-b border-white/5">
+                        <div className="flex gap-4 items-center w-full lg:w-auto">
+                            <div className="p-2 lg:p-3 bg-blue-500/20 rounded-xl">
+                                <Icons.Clock className="w-6 h-6 lg:w-8 lg:h-8 text-blue-400" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">{new Date(now).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h2>
-                                <div className="text-slate-400 font-mono text-sm flex items-center gap-2">
+                                <h2 className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">{new Date(now).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h2>
+                                <div className="text-slate-400 font-mono text-xs lg:text-sm flex items-center gap-2">
                                     {new Date(now).toLocaleDateString()} 
                                     <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-blue-300 border border-blue-900">NJ: {gameState.weather}</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="text-right">
-                             <div className="text-2xl font-bold text-emerald-400">${Math.floor(gameState.money).toLocaleString()}</div>
+                        <div className="text-right w-full lg:w-auto mt-2 lg:mt-0 flex flex-row lg:flex-col justify-between lg:justify-end items-end">
+                             <div className="text-xl lg:text-2xl font-bold text-emerald-400">${Math.floor(gameState.money).toLocaleString()}</div>
                              {gameState.loan > 0 && <div className="text-xs text-red-400 font-mono">LOAN: ${Math.floor(gameState.loan).toLocaleString()}</div>}
                         </div>
                     </div>
 
                     {gameState.snowLevel > 0 && (
-                        <div className="bg-blue-900/80 p-4 rounded-xl flex justify-between items-center border border-blue-500 shadow-lg shadow-blue-900/20">
-                            <div className="text-blue-100"><div className="font-bold flex items-center gap-2"><Icons.Snow className="w-5 h-5"/> Snow Accumulation: {Math.floor(gameState.snowLevel)}%</div><div className="text-xs opacity-75">Operations slowed significantly.</div></div>
-                            <button onClick={()=>setModal({type:'chore', job:'snow'})} className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg font-bold shadow-lg transition-all">Plow Snow</button>
+                        <div className="bg-blue-900/80 p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-2 border border-blue-500 shadow-lg shadow-blue-900/20">
+                            <div className="text-blue-100 text-center md:text-left"><div className="font-bold flex items-center justify-center md:justify-start gap-2"><Icons.Snow className="w-5 h-5"/> Snow: {Math.floor(gameState.snowLevel)}%</div><div className="text-xs opacity-75">Operations slowed.</div></div>
+                            <button onClick={()=>setModal({type:'chore', job:'snow'})} className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg font-bold shadow-lg transition-all w-full md:w-auto">Plow Snow</button>
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                         {(gameState.fields||[]).filter(f => f.owned).map(f => {
                             const job = (gameState.activeJobs||[]).find(j=>j.tid===f.id);
                             const pct = job ? Math.min(100, ((now - job.start)/job.dur)*100) : 0;
@@ -969,7 +975,7 @@
                             
                             return (
                                 <div key={f.id} onClick={()=>!job && setModal({type:'field', id:f.id, state: f.state, crop: f.cropPlan ? f.cropPlan.key : null})} 
-                                     className="glass-panel p-5 cursor-pointer hover:-translate-y-1 transition-transform group relative overflow-hidden">
+                                     className="glass-panel p-4 lg:p-5 cursor-pointer active:scale-95 transition-transform group relative overflow-hidden">
                                     <div className={`absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-10 group-hover:opacity-20 transition-opacity ${cropColor}`}></div>
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="font-bold text-white text-lg">#{f.id}</div>
@@ -1005,42 +1011,40 @@
 
             const renderCloud = () => (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2"><Icons.Cloud className="text-blue-400"/> Save Data & Sync</h2>
-                    <div className="flex gap-2 p-1 bg-slate-900/50 rounded-xl w-fit border border-white/10">
-                        <button onClick={()=>setCloudTab('setup')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${cloudTab==='setup' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Auto Sync (Firebase)</button>
-                        <button onClick={()=>setCloudTab('manual')} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${cloudTab==='manual' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Manual (Backup)</button>
+                    <h2 className="text-xl lg:text-2xl font-bold text-white flex items-center gap-2"><Icons.Cloud className="text-blue-400"/> Save & Sync</h2>
+                    <div className="flex gap-2 p-1 bg-slate-900/50 rounded-xl w-full lg:w-fit border border-white/10">
+                        <button onClick={()=>setCloudTab('setup')} className={`flex-1 px-4 lg:px-6 py-2 rounded-lg text-xs lg:text-sm font-bold transition-all ${cloudTab==='setup' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Auto Sync</button>
+                        <button onClick={()=>setCloudTab('manual')} className={`flex-1 px-4 lg:px-6 py-2 rounded-lg text-xs lg:text-sm font-bold transition-all ${cloudTab==='manual' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Manual</button>
                     </div>
 
                     {cloudTab === 'manual' && (
                         <div className="glass-panel p-6 border-l-4 border-slate-500">
                             <h3 className="text-lg font-bold text-white mb-2">Manual Transfer</h3>
-                            <p className="text-sm text-slate-400 mb-4">Copy the text below to move your save to another device manually.</p>
                             <textarea readOnly className="w-full bg-slate-900 border border-slate-700 text-slate-300 p-4 rounded-lg text-xs font-mono h-32 mb-4" value={localStorage.getItem(SAVE_KEY) || ''}></textarea>
-                            <div className="flex gap-4">
-                                <button onClick={() => {navigator.clipboard.writeText(localStorage.getItem(SAVE_KEY)); alert("Save Data Copied to Clipboard!");}} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Copy Save Data</button>
-                                <button onClick={importSave} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Import Save Data</button>
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                <button onClick={() => {navigator.clipboard.writeText(localStorage.getItem(SAVE_KEY)); alert("Save Data Copied to Clipboard!");}} className="bg-emerald-600 text-white px-4 py-3 rounded-lg font-bold text-sm">Copy Save Data</button>
+                                <button onClick={importSave} className="bg-blue-600 text-white px-4 py-3 rounded-lg font-bold text-sm">Import Save Data</button>
                             </div>
                         </div>
                     )}
 
                     {cloudTab === 'setup' && (
                         <div className="space-y-6">
-                            <div className="glass-panel p-6 border-l-4 border-orange-500 bg-orange-900/10">
+                            <div className="glass-panel p-4 lg:p-6 border-l-4 border-orange-500 bg-orange-900/10">
                                 <h3 className="text-lg font-bold text-white mb-2">Connection Status</h3>
-                                <div className="text-emerald-400 font-mono font-bold text-lg mb-2">Status: {cloudStatus}</div>
-                                <p className="text-sm text-slate-400">Your configuration is hard-coded into this file. You are ready to sync.</p>
+                                <div className="text-emerald-400 font-mono font-bold text-md mb-1">Status: {cloudStatus}</div>
+                                <p className="text-xs text-slate-400">Hard-coded configuration loaded.</p>
                             </div>
 
-                            <div className="glass-panel p-6 border-l-4 border-blue-500">
+                            <div className="glass-panel p-4 lg:p-6 border-l-4 border-blue-500">
                                 <h3 className="text-lg font-bold text-white mb-2">Sync Controls</h3>
                                 <div className="mb-4">
                                     <label className="text-xs text-slate-500 uppercase font-bold block mb-1">Save Slot ID</label>
-                                    <input type="text" value={cloudId} onChange={(e)=>setCloudId(e.target.value)} placeholder="e.g. MyFarm1" className="w-full bg-slate-900 border border-slate-700 text-white p-2 rounded text-sm font-mono"/>
-                                    <div className="text-[10px] text-slate-500 mt-1">Use the same ID on your other devices to load this farm.</div>
+                                    <input type="text" value={cloudId} onChange={(e)=>setCloudId(e.target.value)} placeholder="e.g. MyFarm1" className="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded text-sm font-mono"/>
                                 </div>
-                                <div className="flex gap-4">
-                                    <button onClick={saveToCloud} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold shadow-lg">Save to Cloud</button>
-                                    <button onClick={loadFromCloud} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-bold shadow-lg">Load from Cloud</button>
+                                <div className="flex gap-3">
+                                    <button onClick={saveToCloud} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold shadow-lg">Save</button>
+                                    <button onClick={loadFromCloud} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-bold shadow-lg">Load</button>
                                 </div>
                             </div>
                         </div>
@@ -1051,48 +1055,48 @@
             const renderMarket = () => {
                 const currentMonth = new Date(now).getMonth();
                 return <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-white flex gap-2"><Icons.Dollar className="text-emerald-400"/> Commodity Market</h2>
-                    <div className="glass-panel p-6">
+                    <h2 className="text-xl lg:text-2xl font-bold text-white flex gap-2"><Icons.Dollar className="text-emerald-400"/> Commodity Market</h2>
+                    <div className="glass-panel p-4 lg:p-6">
                         <h3 className="text-lg font-bold text-white mb-4">Spot Market Prices ({MONTH_NAMES[currentMonth]})</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                             {Object.keys(CROPS).map(c => {
                                 const base = CROPS[c].price;
                                 const curr = getSeasonalPrice(c, base, currentMonth);
                                 const diff = curr - base;
                                 return (
                                     <div key={c} className="bg-slate-800 p-3 rounded-lg border border-white/5">
-                                        <div className="text-slate-400 text-xs uppercase">{c}</div>
-                                        <div className="text-xl font-mono font-bold text-white">${curr.toFixed(2)}</div>
-                                        <div className={`text-xs ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{diff >= 0 ? '▲' : '▼'} {Math.abs((diff/base)*100).toFixed(1)}% vs Avg</div>
-                                        <button onClick={()=>setModal({type:'sell_spot', crop:c, price:curr})} className="w-full mt-2 bg-blue-600 text-[10px] py-1 rounded text-white font-bold">SELL</button>
+                                        <div className="text-slate-400 text-[10px] lg:text-xs uppercase">{c}</div>
+                                        <div className="text-lg lg:text-xl font-mono font-bold text-white">${curr.toFixed(2)}</div>
+                                        <div className={`text-[10px] lg:text-xs ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{diff >= 0 ? '▲' : '▼'} {Math.abs((diff/base)*100).toFixed(1)}%</div>
+                                        <button onClick={()=>setModal({type:'sell_spot', crop:c, price:curr})} className="w-full mt-2 bg-blue-600 text-[10px] py-2 rounded text-white font-bold">SELL</button>
                                     </div>
                                 )
                             })}
                         </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="glass-panel p-6">
+                        <div className="glass-panel p-4 lg:p-6">
                             <h3 className="text-lg font-bold text-white mb-4">Available Contracts</h3>
                             <div className="space-y-3">
                                 {(gameState.contracts||[]).map(c => (
-                                    <div key={c.id} className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 flex justify-between items-center">
-                                        <div><div className="text-emerald-400 font-bold">{c.buyer}</div><div className="text-sm text-white">{c.qty.toLocaleString()} bu {c.crop} @ ${c.price.toFixed(2)}</div><div className="text-xs text-slate-400">Deadline: {formatTime(c.deadline - now)}</div></div>
-                                        <button onClick={()=>signContract(c)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-bold">Sign</button>
+                                    <div key={c.id} className="p-3 bg-slate-800/50 rounded-xl border border-slate-700 flex justify-between items-center">
+                                        <div><div className="text-emerald-400 font-bold text-sm">{c.buyer}</div><div className="text-xs text-white">{c.qty.toLocaleString()} bu {c.crop}</div></div>
+                                        <button onClick={()=>signContract(c)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-bold">Sign</button>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="glass-panel p-6 border border-blue-500/30">
+                        <div className="glass-panel p-4 lg:p-6 border border-blue-500/30">
                             <h3 className="text-lg font-bold text-white mb-4">Active Contracts</h3>
                             <div className="space-y-3">
-                                {(gameState.activeContracts||[]).length === 0 && <div className="text-slate-500 italic">No active contracts.</div>}
+                                {(gameState.activeContracts||[]).length === 0 && <div className="text-slate-500 italic text-sm">No active contracts.</div>}
                                 {(gameState.activeContracts||[]).map(c => {
                                     const pct = (c.delivered / c.qty) * 100;
                                     return (
-                                        <div key={c.id} className="p-4 bg-blue-900/20 rounded-xl border border-blue-500/30">
-                                            <div className="flex justify-between mb-2"><span className="text-white font-bold">{c.buyer} ({c.crop})</span><span className="text-red-300 text-xs font-mono">{formatTime(c.deadline - now)}</span></div>
+                                        <div key={c.id} className="p-3 bg-blue-900/20 rounded-xl border border-blue-500/30">
+                                            <div className="flex justify-between mb-2"><span className="text-white font-bold text-xs">{c.buyer} ({c.crop})</span><span className="text-red-300 text-[10px] font-mono">{formatTime(c.deadline - now)}</span></div>
                                             <div className="w-full h-2 bg-slate-800 rounded-full mb-2"><div className="h-full bg-blue-500" style={{width:`${pct}%`}}></div></div>
-                                            <div className="flex justify-between items-center"><div className="text-xs text-blue-200">{c.delivered.toLocaleString()} / {c.qty.toLocaleString()} bu</div><button onClick={()=>deliverContract(c.id, 10000)} className="bg-blue-600 text-white px-3 py-1 rounded text-[10px] font-bold">Deliver 10k</button></div>
+                                            <div className="flex justify-between items-center"><div className="text-[10px] text-blue-200">{c.delivered.toLocaleString()} / {c.qty.toLocaleString()}</div><button onClick={()=>deliverContract(c.id, 10000)} className="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Deliver</button></div>
                                         </div>
                                     )
                                 })}
@@ -1104,7 +1108,7 @@
 
             const renderJobs = () => (
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.List className="text-purple-400"/> Farm Schedule</h2>
+                    <h2 className="text-xl lg:text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.List className="text-purple-400"/> Farm Schedule</h2>
                     <div className="grid grid-cols-1 gap-3">
                         {(gameState.miscTasks||[]).map(t => {
                             const job = (gameState.activeJobs||[]).find(j => j.tid === t.id);
@@ -1113,10 +1117,10 @@
                             let timeStr = "", pct = 0;
                             if(job) { const elapsed = now - job.start; const remaining = Math.max(0, job.dur - elapsed); pct = Math.min(100, (elapsed / job.dur) * 100); timeStr = formatTime(remaining); }
                             return (
-                                <div key={t.id} className="glass-panel p-4 flex justify-between items-center border-l-4 border-l-purple-500">
-                                    <div className="flex-1"><div className="text-white font-bold text-lg">{t.name}</div><div className="text-xs text-slate-400 flex gap-2 mt-1"><span className="bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">{t.freq}</span><span className="bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">Req: {t.req || 'None'}</span></div></div>
-                                    <div className="flex-1 max-w-xs text-right">
-                                        {job ? ( <div className="w-full"><div className="flex justify-between text-[10px] text-amber-400 font-bold mb-1"><span>IN PROGRESS</span><span className="font-mono">{timeStr}</span></div><div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-amber-500 to-yellow-300 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div> ) : isDone ? ( <div className="text-emerald-400 font-bold flex items-center justify-end gap-2 bg-emerald-900/20 px-3 py-1 rounded-lg border border-emerald-900/50">COMPLETED <Icons.Clock className="w-4 h-4"/></div> ) : isSkipped ? ( <div className="text-slate-500 font-bold italic">Wrong Season</div> ) : ( <button onClick={()=>setModal({type:'misc', jobId: t.id})} className="btn-modern bg-blue-600/80 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-blue-500">Start Task</button> )}
+                                <div key={t.id} className="glass-panel p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-l-4 border-l-purple-500">
+                                    <div className="flex-1"><div className="text-white font-bold text-md">{t.name}</div><div className="text-xs text-slate-400 flex gap-2 mt-1"><span className="bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">{t.freq}</span><span className="bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">Req: {t.req || 'None'}</span></div></div>
+                                    <div className="flex-1 w-full md:w-auto md:max-w-xs text-right">
+                                        {job ? ( <div className="w-full"><div className="flex justify-between text-[10px] text-amber-400 font-bold mb-1"><span>IN PROGRESS</span><span className="font-mono">{timeStr}</span></div><div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-amber-500 to-yellow-300 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div> ) : isDone ? ( <div className="text-emerald-400 font-bold text-xs flex items-center justify-end gap-2 bg-emerald-900/20 px-3 py-2 rounded-lg border border-emerald-900/50 w-full md:w-auto text-center">COMPLETED</div> ) : isSkipped ? ( <div className="text-slate-500 font-bold italic text-xs">Wrong Season</div> ) : ( <button onClick={()=>setModal({type:'misc', jobId: t.id})} className="w-full md:w-auto btn-modern bg-blue-600/80 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-blue-500">Start Task</button> )}
                                     </div>
                                 </div>
                             )
@@ -1127,12 +1131,12 @@
             
             const renderStore = () => (
                 <div className="space-y-6">
-                    <div className="flex gap-2 p-1 bg-slate-900/50 rounded-xl w-fit border border-white/10">
-                        {['eq','sup','bundle'].map(tab => ( <button key={tab} onClick={()=>setStoreTab(tab)} className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${storeTab===tab ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{tab === 'eq' ? 'Equipment' : tab === 'sup' ? 'Supplies' : 'Bundles'}</button> ))}
+                    <div className="flex gap-2 p-1 bg-slate-900/50 rounded-xl w-full border border-white/10 overflow-x-auto">
+                        {['eq','sup','bundle'].map(tab => ( <button key={tab} onClick={()=>setStoreTab(tab)} className={`flex-1 px-4 py-3 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${storeTab===tab ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>{tab === 'eq' ? 'Equipment' : tab === 'sup' ? 'Supplies' : 'Bundles'}</button> ))}
                     </div>
-                    {storeTab==='eq' && <div className="grid grid-cols-2 gap-3 h-[600px] overflow-y-auto pr-2">{EQUIPMENT.map(e=>(<div key={e.id} className="glass-panel p-4 flex justify-between items-center group"><div><div className="text-white font-bold text-sm group-hover:text-blue-300 transition-colors">{e.name}</div><div className="text-xs text-slate-500">{e.cat}</div></div><div className="flex flex-col gap-1 items-end"><button onClick={()=>buy(e,'eq')} className="text-emerald-400 text-xs font-mono bg-emerald-900/20 px-3 py-1 rounded border border-emerald-900/50 hover:bg-emerald-800/30 transition-colors">Buy ${e.cost.toLocaleString()}</button><button onClick={()=>lease(e)} className="text-blue-400 text-xs font-mono bg-blue-900/20 px-3 py-1 rounded border border-blue-900/50 hover:bg-blue-800/30 transition-colors">Lease ${(e.cost*EQUIP_LEASE_RATE).toLocaleString()}</button></div></div>))}</div>}
-                    {storeTab==='sup' && <div className="grid grid-cols-3 gap-3">{Object.entries(SUPPLIES).map(([k,v])=>(<div key={k} className="glass-panel p-4 flex flex-col justify-between h-24 hover:bg-slate-800/50 transition-colors"><div className="text-white text-xs font-bold uppercase tracking-wider">{k.replace('seed_','')}</div><button onClick={()=>buy({key:k,val:v},'sup',10)} className="text-emerald-400 text-xs text-left font-mono">Buy 10 (${v*10})</button></div>))}</div>}
-                    {storeTab==='bundle' && <div className="grid grid-cols-1 gap-6"><div className="glass-panel p-8 border border-amber-500/30 relative overflow-hidden"><div className="absolute top-0 right-0 p-4 opacity-10"><Icons.Tractor className="w-32 h-32 text-amber-500"/></div><h3 className="text-2xl text-amber-400 font-black italic">STARTER KIT</h3><p className="text-slate-400 text-sm mb-4">Essential tractors and tools to get going.</p><button onClick={()=>buyBundle('start')} className="mt-2 bg-amber-600 hover:bg-amber-500 py-3 px-6 rounded-lg text-white font-bold shadow-lg shadow-amber-900/20">Purchase Bundle ($1.5M)</button></div><div className="glass-panel p-8 border border-purple-500/30 relative overflow-hidden"><div className="absolute top-0 right-0 p-4 opacity-10"><Icons.Barn className="w-32 h-32 text-purple-500"/></div><h3 className="text-2xl text-purple-400 font-black italic">MEGA FARMER</h3><p className="text-slate-400 text-sm mb-4">Heavy machinery and basic livestock.</p><button onClick={()=>buyBundle('mega')} className="mt-2 bg-purple-600 hover:bg-purple-500 py-3 px-6 rounded-lg text-white font-bold shadow-lg shadow-purple-900/20">Purchase Bundle ($1.8M)</button></div><div className="glass-panel p-8 border border-yellow-500/30 relative overflow-hidden bg-gradient-to-br from-yellow-900/10 to-transparent"><div className="absolute top-0 right-0 p-4 opacity-10"><Icons.Bank className="w-32 h-32 text-yellow-500"/></div><h3 className="text-3xl text-yellow-400 font-black italic">ULTIMATE TYCOON</h3><p className="text-yellow-200/60 text-sm mb-4">Liquidate everything. Own everything.</p><button onClick={()=>buyBundle('ultimate')} className="w-full mt-2 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 py-4 rounded-lg text-white font-black tracking-widest shadow-xl">BECOME A TYCOON</button></div></div>}
+                    {storeTab==='eq' && <div className="grid grid-cols-1 md:grid-cols-2 gap-3 h-[60vh] overflow-y-auto pr-2 pb-20">{EQUIPMENT.map(e=>(<div key={e.id} className="glass-panel p-4 flex justify-between items-center group"><div><div className="text-white font-bold text-sm group-hover:text-blue-300 transition-colors">{e.name}</div><div className="text-xs text-slate-500">{e.cat}</div></div><div className="flex flex-col gap-2 items-end"><button onClick={()=>buy(e,'eq')} className="text-emerald-400 text-xs font-mono bg-emerald-900/20 px-3 py-1.5 rounded border border-emerald-900/50">Buy ${e.cost.toLocaleString()}</button><button onClick={()=>lease(e)} className="text-blue-400 text-xs font-mono bg-blue-900/20 px-3 py-1.5 rounded border border-blue-900/50">Lease ${(e.cost*EQUIP_LEASE_RATE).toLocaleString()}</button></div></div>))}</div>}
+                    {storeTab==='sup' && <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{Object.entries(SUPPLIES).map(([k,v])=>(<div key={k} className="glass-panel p-4 flex flex-col justify-between h-24 hover:bg-slate-800/50 transition-colors"><div className="text-white text-xs font-bold uppercase tracking-wider">{k.replace('seed_','')}</div><button onClick={()=>buy({key:k,val:v},'sup',10)} className="text-emerald-400 text-xs text-left font-mono py-2">Buy 10 (${v*10})</button></div>))}</div>}
+                    {storeTab==='bundle' && <div className="grid grid-cols-1 gap-6"><div className="glass-panel p-6 border border-amber-500/30 relative overflow-hidden"><div className="absolute top-0 right-0 p-4 opacity-10"><Icons.Tractor className="w-32 h-32 text-amber-500"/></div><h3 className="text-2xl text-amber-400 font-black italic">STARTER KIT</h3><p className="text-slate-400 text-sm mb-4">Essential tractors and tools to get going.</p><button onClick={()=>buyBundle('start')} className="w-full mt-2 bg-amber-600 hover:bg-amber-500 py-3 px-6 rounded-lg text-white font-bold shadow-lg shadow-amber-900/20">Purchase Bundle ($1.5M)</button></div><div className="glass-panel p-6 border border-purple-500/30 relative overflow-hidden"><div className="absolute top-0 right-0 p-4 opacity-10"><Icons.Barn className="w-32 h-32 text-purple-500"/></div><h3 className="text-2xl text-purple-400 font-black italic">MEGA FARMER</h3><p className="text-slate-400 text-sm mb-4">Heavy machinery and basic livestock.</p><button onClick={()=>buyBundle('mega')} className="w-full mt-2 bg-purple-600 hover:bg-purple-500 py-3 px-6 rounded-lg text-white font-bold shadow-lg shadow-purple-900/20">Purchase Bundle ($1.8M)</button></div></div>}
                 </div>
             );
 
@@ -1143,29 +1147,29 @@
                 const availableBuildings = Object.entries(BUILDINGS).filter(([k,v]) => v.category === 'Storage' || v.category === 'Infrastructure');
 
                 return <div className="space-y-6">
-                    <div className="glass-panel p-6 rounded-2xl border-l-4 border-orange-500 relative overflow-hidden mb-6 bg-gradient-to-r from-orange-900/20 to-transparent">
-                        <div className="flex justify-between items-start relative z-10"><div><div className="text-xs text-orange-400 uppercase font-bold flex items-center gap-2 tracking-widest"><Icons.Fuel className="w-4 h-4"/> Farm Diesel Reserve</div><div className="text-3xl text-white font-mono mt-2 font-bold tracking-tight">{Math.floor(gameState.consumables.diesel||0).toLocaleString()} <span className="text-base text-slate-500 font-normal">/ {stats.fuelCap.toLocaleString()} gal</span></div></div><button onClick={()=>setModal({type:'buy_fuel'})} className="btn-modern bg-orange-600/80 hover:bg-orange-500 text-white text-xs py-3 px-5 rounded-lg font-bold">Refill Tank</button></div>
+                    <div className="glass-panel p-4 rounded-2xl border-l-4 border-orange-500 relative overflow-hidden mb-6 bg-gradient-to-r from-orange-900/20 to-transparent">
+                        <div className="flex justify-between items-start relative z-10"><div><div className="text-xs text-orange-400 uppercase font-bold flex items-center gap-2 tracking-widest"><Icons.Fuel className="w-4 h-4"/> Farm Diesel</div><div className="text-2xl lg:text-3xl text-white font-mono mt-1 font-bold tracking-tight">{Math.floor(gameState.consumables.diesel||0).toLocaleString()} <span className="text-sm lg:text-base text-slate-500 font-normal">/ {stats.fuelCap.toLocaleString()}</span></div></div><button onClick={()=>setModal({type:'buy_fuel'})} className="btn-modern bg-orange-600/80 hover:bg-orange-500 text-white text-xs py-2 px-4 rounded-lg font-bold">Refill</button></div>
                         <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-800"><div className="h-full bg-orange-500 fuel-flow" style={{width: `${Math.min(100, ((gameState.consumables.diesel||0)/stats.fuelCap)*100)}%`}}></div></div>
                     </div>
                     {garageConstruction.length > 0 && (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">{garageConstruction.map(c => { const timeLeft = c.endTime - now; const bldg = BUILDINGS[c.key] || {name:'Unknown', buildTime: 10000}; const totalTime = bldg.buildTime; const pct = Math.max(0, Math.min(100, 100 - (timeLeft/totalTime)*100)); return (<div key={c.id} className="glass-panel p-4 border border-yellow-500/50 bg-yellow-900/10"><div className="text-yellow-500 font-bold text-xs uppercase mb-2">🚧 Under Construction</div><div className="text-white font-bold">{bldg.name}</div><div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden my-2"><div className="h-full bg-yellow-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div><div className="text-right text-xs text-yellow-200 font-mono">{formatTime(timeLeft)} left</div></div>) })}</div>)}
-                    <div className="glass-panel p-6 border-t-4 border-blue-500"><h3 className="text-lg font-bold text-white mb-4">Expand Facilities</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{availableBuildings.map(([k,v]) => (<div key={k} className="bg-slate-800/50 p-4 rounded-xl border border-white/5 flex flex-col justify-between"><div><div className="text-white font-bold">{v.name}</div><div className="text-xs text-slate-400 mt-1">Est. Time: {formatTime(v.buildTime)}</div><div className="text-xs text-blue-300 mt-2">Capacity: {v.capacity.toLocaleString()}</div></div><button onClick={()=>{if(gameState.money < v.cost) return alert("Insufficient Funds"); setGameState(p=>({...p, money:p.money-v.cost, construction:[...p.construction, {id:Math.random(), key:k, endTime: Date.now()+v.buildTime}], transactions: [{id:Date.now(), desc: `Construction: ${v.name}`, amount: -v.cost, date:Date.now()}, ...p.transactions]}));}} className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded-lg transition-colors">Build ${v.cost.toLocaleString()}</button></div>))}</div></div>
+                    <div className="glass-panel p-4 lg:p-6 border-t-4 border-blue-500"><h3 className="text-lg font-bold text-white mb-4">Expand Facilities</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{availableBuildings.map(([k,v]) => (<div key={k} className="bg-slate-800/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between"><div><div className="text-white font-bold text-sm">{v.name}</div><div className="text-xs text-blue-300 mt-1">Cap: {v.capacity.toLocaleString()}</div></div><button onClick={()=>{if(gameState.money < v.cost) return alert("Insufficient Funds"); setGameState(p=>({...p, money:p.money-v.cost, construction:[...p.construction, {id:Math.random(), key:k, endTime: Date.now()+v.buildTime}], transactions: [{id:Date.now(), desc: `Construction: ${v.name}`, amount: -v.cost, date:Date.now()}, ...p.transactions]}));}} className="mt-2 w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded-lg transition-colors">Build ${v.cost.toLocaleString()}</button></div>))}</div></div>
                     <h3 className="text-lg font-bold text-white mt-6 mb-2">Fleet Management</h3>
-                    <div className="grid grid-cols-2 gap-4">{items.map(i => { const maintJob = (gameState.activeJobs||[]).find(j => j.type === 'maintenance' && j.tid === i.uid); let timeStr = ""; let pct = 0; if(maintJob) { const elapsed = now - maintJob.start; const remaining = Math.max(0, maintJob.dur - elapsed); pct = Math.min(100, (elapsed / maintJob.dur) * 100); timeStr = formatTime(remaining); } const eq = getEq(i.itemId); return ( <div key={i.uid} className={`glass-panel p-5 relative group transition-colors overflow-hidden ${maintJob ? 'bg-red-900/20 border-red-500/30' : 'hover:bg-slate-800/40'}`}> {maintJob && (<div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center backdrop-blur-sm"><div className="text-red-500 font-black text-xl tracking-widest border-2 border-red-500 px-4 py-1 rounded rotate-[-10deg] shadow-[0_0_15px_rgba(239,68,68,0.5)]">OUT OF SERVICE</div><div className="mt-4 w-3/4"><div className="flex justify-between text-xs text-red-300 font-mono mb-1"><span>REPAIRING...</span><span>{timeStr}</span></div><div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-red-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div></div>)} <div className="flex justify-between items-start mb-3 relative z-10"><div><div className="text-white font-bold text-sm">{eq.name}</div><div className="text-[10px] text-slate-500 font-mono mt-1 flex gap-2"><span>ID: {i.uid.substr(0,4)}</span>{i.ownership === 'leased' && <span className="text-blue-400 font-bold uppercase">LEASED</span>}</div></div><div className={`px-2 py-1 rounded text-[10px] font-bold ${i.condition < 40 ? 'bg-red-900/30 text-red-400 border border-red-900/50' : 'bg-emerald-900/30 text-emerald-400 border border-emerald-900/50'}`}>{Math.floor(i.condition)}% COND</div></div><div className="w-full h-1 bg-slate-700 rounded-full mb-4 relative z-10"><div className={`h-full rounded-full ${i.condition<20?'bg-red-500':'bg-emerald-500'}`} style={{width:`${i.condition}%`}}></div></div><div className="flex gap-2 relative z-10"><button disabled={!!maintJob} onClick={()=>setModal({type:'maintenance', step:'Service', tid:i.uid, tr:i.uid})} className="flex-1 bg-slate-700 hover:bg-yellow-600 hover:text-white text-[10px] py-2 rounded text-slate-300 font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">MAINTENANCE</button><button disabled={!!maintJob} onClick={()=>refillTractor(i.uid)} className="flex-1 bg-slate-700 hover:bg-blue-600 hover:text-white text-[10px] py-2 rounded text-slate-300 font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">REFUEL</button></div></div> )})}</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20">{items.map(i => { const maintJob = (gameState.activeJobs||[]).find(j => j.type === 'maintenance' && j.tid === i.uid); let timeStr = ""; let pct = 0; if(maintJob) { const elapsed = now - maintJob.start; const remaining = Math.max(0, maintJob.dur - elapsed); pct = Math.min(100, (elapsed / maintJob.dur) * 100); timeStr = formatTime(remaining); } const eq = getEq(i.itemId); return ( <div key={i.uid} className={`glass-panel p-4 relative group transition-colors overflow-hidden ${maintJob ? 'bg-red-900/20 border-red-500/30' : 'hover:bg-slate-800/40'}`}> {maintJob && (<div className="absolute inset-0 bg-black/60 z-20 flex flex-col items-center justify-center backdrop-blur-sm"><div className="text-red-500 font-black text-xl tracking-widest border-2 border-red-500 px-4 py-1 rounded rotate-[-10deg] shadow-[0_0_15px_rgba(239,68,68,0.5)]">OUT OF SERVICE</div><div className="mt-4 w-3/4"><div className="flex justify-between text-xs text-red-300 font-mono mb-1"><span>REPAIRING...</span><span>{timeStr}</span></div><div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-red-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div></div>)} <div className="flex justify-between items-start mb-3 relative z-10"><div><div className="text-white font-bold text-sm">{eq.name}</div><div className="text-[10px] text-slate-500 font-mono mt-1 flex gap-2"><span>ID: {i.uid.substr(0,4)}</span>{i.ownership === 'leased' && <span className="text-blue-400 font-bold uppercase">LEASED</span>}</div></div><div className={`px-2 py-1 rounded text-[10px] font-bold ${i.condition < 40 ? 'bg-red-900/30 text-red-400 border border-red-900/50' : 'bg-emerald-900/30 text-emerald-400 border border-emerald-900/50'}`}>{Math.floor(i.condition)}% COND</div></div><div className="w-full h-1 bg-slate-700 rounded-full mb-4 relative z-10"><div className={`h-full rounded-full ${i.condition<20?'bg-red-500':'bg-emerald-500'}`} style={{width:`${i.condition}%`}}></div></div><div className="flex gap-2 relative z-10"><button disabled={!!maintJob} onClick={()=>setModal({type:'maintenance', step:'Service', tid:i.uid, tr:i.uid})} className="flex-1 bg-slate-700 hover:bg-yellow-600 hover:text-white text-[10px] py-2 rounded text-slate-300 font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">MAINTAIN</button><button disabled={!!maintJob} onClick={()=>refillTractor(i.uid)} className="flex-1 bg-slate-700 hover:bg-blue-600 hover:text-white text-[10px] py-2 rounded text-slate-300 font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">REFUEL</button></div></div> )})}</div>
                 </div>
             };
 
-            const renderBank = () => (<div className="space-y-6"><div className="grid grid-cols-2 gap-4"><div className="glass-panel p-6 border-l-4 border-emerald-500 bg-gradient-to-r from-emerald-900/10 to-transparent"><div className="text-emerald-400 text-xs font-bold uppercase mb-1">Liquid Capital</div><div className="text-2xl font-mono text-white tracking-tight">${Math.floor(gameState.money).toLocaleString()}</div></div><div className="glass-panel p-6 border-l-4 border-red-500 bg-gradient-to-r from-red-900/10 to-transparent"><div className="text-red-400 text-xs font-bold uppercase mb-1">Outstanding Debt</div><div className="text-2xl font-mono text-white tracking-tight">${Math.floor(gameState.loan).toLocaleString()}</div></div></div><div className="glass-panel p-6"><h3 className="text-white font-bold mb-4 flex items-center gap-2"><Icons.List className="w-4 h-4"/> Recent Transactions</h3><div className="h-96 overflow-y-auto text-xs space-y-1 pr-2">{(gameState.transactions||[]).map(t=>(<div key={t.id} className="flex justify-between items-center py-2 px-3 hover:bg-white/5 rounded transition-colors border-b border-white/5"><span className="text-slate-300">{t.desc}</span><span className={`font-mono font-bold ${t.amount>0?'text-emerald-400':'text-red-400'}`}>{t.amount > 0 ? '+' : ''}${Math.floor(t.amount).toLocaleString()}</span></div>))}</div></div><div className="flex gap-3"><button onClick={()=>loanOp(50000)} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold shadow-lg shadow-emerald-900/20">Borrow $50k</button><button onClick={()=>loanOp(1000000)} className="flex-1 bg-emerald-800 hover:bg-emerald-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-emerald-900/20">Borrow $1M</button></div><div className="flex gap-3"><button onClick={()=>loanOp(-50000)} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/20">Repay $50k</button><button onClick={()=>loanOp(-1000000)} className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/20">Repay $1M</button></div></div>);
+            const renderBank = () => (<div className="space-y-6"><div className="grid grid-cols-2 gap-3"><div className="glass-panel p-4 border-l-4 border-emerald-500 bg-gradient-to-r from-emerald-900/10 to-transparent"><div className="text-emerald-400 text-[10px] font-bold uppercase mb-1">Liquid Capital</div><div className="text-lg font-mono text-white tracking-tight">${Math.floor(gameState.money).toLocaleString()}</div></div><div className="glass-panel p-4 border-l-4 border-red-500 bg-gradient-to-r from-red-900/10 to-transparent"><div className="text-red-400 text-[10px] font-bold uppercase mb-1">Debt</div><div className="text-lg font-mono text-white tracking-tight">${Math.floor(gameState.loan).toLocaleString()}</div></div></div><div className="glass-panel p-4"><h3 className="text-white font-bold mb-4 flex items-center gap-2"><Icons.List className="w-4 h-4"/> Recent Transactions</h3><div className="h-64 overflow-y-auto text-xs space-y-1 pr-2">{(gameState.transactions||[]).map(t=>(<div key={t.id} className="flex justify-between items-center py-2 px-2 hover:bg-white/5 rounded transition-colors border-b border-white/5"><span className="text-slate-300 truncate w-32">{t.desc}</span><span className={`font-mono font-bold ${t.amount>0?'text-emerald-400':'text-red-400'}`}>{t.amount > 0 ? '+' : ''}${Math.floor(t.amount).toLocaleString()}</span></div>))}</div></div><div className="flex gap-2"><button onClick={()=>loanOp(50000)} className="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold text-xs shadow-lg">Borrow $50k</button><button onClick={()=>loanOp(1000000)} className="flex-1 bg-emerald-800 text-white py-3 rounded-lg font-bold text-xs shadow-lg">Borrow $1M</button></div><div className="flex gap-2"><button onClick={()=>loanOp(-50000)} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold text-xs shadow-lg">Repay $50k</button><button onClick={()=>loanOp(-1000000)} className="flex-1 bg-blue-800 text-white py-3 rounded-lg font-bold text-xs shadow-lg">Repay $1M</button></div></div>);
             
-            const renderHR = () => (<div className="glass-panel p-8"><div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold text-white">Workforce Management</h2><div className="text-xs text-slate-400">Total Employees: {gameState.employees.length - 1}</div></div><div className="grid grid-cols-4 gap-3 mb-8">{Object.keys(EMP_ROLES).map(r => ( <button key={r} onClick={()=>hire(r)} className="bg-slate-800 hover:bg-blue-600 text-white text-xs py-3 rounded-lg font-bold transition-all border border-slate-700 hover:border-blue-400 group"><div className="text-slate-400 group-hover:text-blue-200 text-[10px] uppercase mb-1">Recruit</div>{EMP_ROLES[r].name}</button> ))}</div><div className="space-y-2">{(gameState.employees||[]).map(e => ( <div key={e.id} className="flex justify-between items-center p-4 bg-slate-800/50 rounded-xl border border-white/5"><div className="flex items-center gap-4"><div className={`w-2 h-2 rounded-full ${e.status === 'Idle' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></div><div><div className="text-white font-bold text-sm">{e.name}</div><div className="text-xs text-slate-500">{e.role} • ${e.hourlyRate}/hr</div></div></div><div className="flex items-center gap-4"><div className={`text-xs font-bold px-2 py-1 rounded ${e.status==='Idle'?'bg-emerald-900/30 text-emerald-400':'bg-amber-900/30 text-amber-400'}`}>{e.status}</div>{e.id!==1 && <button onClick={()=>fireEmployee(e.id)} className="text-red-500 text-xs hover:text-red-300 font-bold">TERMINATE</button>}</div></div> ))}</div></div>);
+            const renderHR = () => (<div className="glass-panel p-4 lg:p-8"><div className="flex justify-between items-center mb-6"><h2 className="text-xl lg:text-2xl font-bold text-white">Workforce</h2><div className="text-xs text-slate-400">Total: {gameState.employees.length - 1}</div></div><div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-8">{Object.keys(EMP_ROLES).map(r => ( <button key={r} onClick={()=>hire(r)} className="bg-slate-800 hover:bg-blue-600 text-white text-xs py-3 rounded-lg font-bold transition-all border border-slate-700 hover:border-blue-400 group"><div className="text-slate-400 group-hover:text-blue-200 text-[8px] uppercase mb-1">Recruit</div>{EMP_ROLES[r].name}</button> ))}</div><div className="space-y-2 pb-20">{(gameState.employees||[]).map(e => ( <div key={e.id} className="flex justify-between items-center p-3 bg-slate-800/50 rounded-xl border border-white/5"><div className="flex items-center gap-3"><div className={`w-2 h-2 rounded-full ${e.status === 'Idle' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}></div><div><div className="text-white font-bold text-xs">{e.name}</div><div className="text-[10px] text-slate-500">{e.role} • ${e.hourlyRate}/hr</div></div></div><div className="flex items-center gap-2"><div className={`text-[10px] font-bold px-2 py-1 rounded ${e.status==='Idle'?'bg-emerald-900/30 text-emerald-400':'bg-amber-900/30 text-amber-400'}`}>{e.status}</div>{e.id!==1 && <button onClick={()=>fireEmployee(e.id)} className="text-red-500 text-[10px] font-bold border border-red-900/50 px-2 py-1 rounded">FIRE</button>}</div></div> ))}</div></div>);
             
             const renderLive = () => {
                 const activeFacilities = (gameState.facilities||[]).filter(f => BUILDINGS[f.key] && BUILDINGS[f.key].category === 'Livestock');
                 const pendingConstruction = (gameState.construction||[]).filter(c => BUILDINGS[c.key] && BUILDINGS[c.key].category === 'Livestock');
 
-                return <div className="space-y-6"><div className="flex justify-between items-center"><h2 className="text-2xl font-bold text-white flex items-center gap-2"><Icons.Barn className="text-orange-400"/> Livestock Operations</h2><button onClick={()=>setModal({type:'build', tab:'live'})} className="btn-modern bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-500">+ New Pen</button></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{pendingConstruction.map(c => { const timeLeft = c.endTime - now; const totalTime = BUILDINGS[c.key].buildTime; const pct = Math.max(0, Math.min(100, 100 - (timeLeft/totalTime)*100)); return (<div key={c.id} className="glass-panel p-6 rounded-xl border border-dashed border-yellow-500/50 bg-yellow-900/10"><div className="flex justify-between mb-4"><div className="font-bold text-yellow-500">🚧 Construction Site</div></div><div className="text-white font-bold text-lg mb-2">{BUILDINGS[c.key].name}</div><div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden mb-2"><div className="h-full bg-yellow-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div><div className="text-right text-xs font-mono text-yellow-200">{formatTime(timeLeft)} remaining</div></div>) })}{activeFacilities.map(f => { const job = (gameState.activeJobs||[]).find(j=>j.tid == f.id); const pct = job ? Math.min(100, ((now - job.start)/job.dur)*100) : 0; let timeStr = ""; if(job) { const el = now - job.start; const rem = Math.max(0, job.dur - el); timeStr = formatTime(rem); } const needsAttention = f.animals && (f.feed < 30 || f.water < 30); const buildingDef = BUILDINGS[f.key]; const feedType = buildingDef.input ? buildingDef.input.toUpperCase() : 'FEED'; const count = f.animals ? f.animals.count : 0; let feedTime = "N/A", waterTime = "N/A"; if (count > 0) { const decayBase = 0.00025 * count; const feedSecs = f.feed / decayBase; feedTime = formatTime(feedSecs * 1000); const waterSecs = f.water / (decayBase * 1.2); waterTime = formatTime(waterSecs * 1000); } return <div key={f.id} className={`glass-panel p-5 rounded-xl border-t-4 transition-all ${needsAttention ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'border-slate-600'}`}><div className="flex justify-between items-start mb-3"><div className="font-bold text-white text-lg">{BUILDINGS[f.key].name}</div>{needsAttention && <div className="text-[10px] bg-red-600 px-2 py-1 rounded text-white font-bold animate-pulse">ATTENTION</div>}</div><div className="text-xs text-slate-400 mb-4 bg-slate-900/50 p-2 rounded inline-block">{f.animals ? `${f.animals.count} ${ANIMALS[f.animals.type].name}` : 'Empty Pen'}</div>{f.animals && <div className="space-y-2 mb-4"><div><div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>{feedType} Level</span><span>{Math.floor(f.feed)}% ({feedTime})</span></div><div className="w-full bg-slate-800 h-1.5 rounded-full"><div className={`h-full rounded-full transition-all duration-500 ${f.feed<30?'bg-red-500':'bg-emerald-500'}`} style={{width:`${f.feed}%`}}></div></div></div><div><div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>Water Level</span><span>{Math.floor(f.water)}% ({waterTime})</span></div><div className="w-full bg-slate-800 h-1.5 rounded-full"><div className={`h-full rounded-full transition-all duration-500 ${f.water<30?'bg-red-500':'bg-blue-500'}`} style={{width:`${f.water}%`}}></div></div></div></div>}{f.animals && !job && <div className="flex gap-2"><button onClick={()=>setModal({type:'chore', job:'feed', fid:f.id})} className="flex-1 bg-emerald-700/80 hover:bg-emerald-600 text-[10px] text-white py-2 rounded font-bold transition-colors">FEED</button><button onClick={()=>setModal({type:'chore', job:'water', fid:f.id})} className="flex-1 bg-blue-700/80 hover:bg-blue-600 text-[10px] text-white py-2 rounded font-bold transition-colors">WATER</button><button onClick={()=>setModal({type:'chore', job:'straw', fid:f.id})} className="flex-1 bg-amber-700/80 hover:bg-amber-600 text-[10px] text-white py-2 rounded font-bold transition-colors">BEDDING</button></div>}{job && <div className="mt-2 bg-slate-900/50 p-2 rounded"><div className="flex justify-between text-[10px] text-amber-400 font-bold mb-1"><span className="uppercase">{job.task} IN PROGRESS</span><span className="font-mono">{timeStr}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-amber-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div>}</div> })}</div></div>
+                return <div className="space-y-6"><div className="flex justify-between items-center"><h2 className="text-xl lg:text-2xl font-bold text-white flex items-center gap-2"><Icons.Barn className="text-orange-400"/> Livestock</h2><button onClick={()=>setModal({type:'build', tab:'live'})} className="btn-modern bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-500">+ Pen</button></div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{pendingConstruction.map(c => { const timeLeft = c.endTime - now; const totalTime = BUILDINGS[c.key].buildTime; const pct = Math.max(0, Math.min(100, 100 - (timeLeft/totalTime)*100)); return (<div key={c.id} className="glass-panel p-6 rounded-xl border border-dashed border-yellow-500/50 bg-yellow-900/10"><div className="flex justify-between mb-4"><div className="font-bold text-yellow-500">🚧 Construction Site</div></div><div className="text-white font-bold text-lg mb-2">{BUILDINGS[c.key].name}</div><div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden mb-2"><div className="h-full bg-yellow-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div><div className="text-right text-xs font-mono text-yellow-200">{formatTime(timeLeft)} remaining</div></div>) })}{activeFacilities.map(f => { const job = (gameState.activeJobs||[]).find(j=>j.tid == f.id); const pct = job ? Math.min(100, ((now - job.start)/job.dur)*100) : 0; let timeStr = ""; if(job) { const el = now - job.start; const rem = Math.max(0, job.dur - el); timeStr = formatTime(rem); } const needsAttention = f.animals && (f.feed < 30 || f.water < 30); const buildingDef = BUILDINGS[f.key]; const feedType = buildingDef.input ? buildingDef.input.toUpperCase() : 'FEED'; const count = f.animals ? f.animals.count : 0; let feedTime = "N/A", waterTime = "N/A"; if (count > 0) { const decayBase = 0.00025 * count; const feedSecs = f.feed / decayBase; feedTime = formatTime(feedSecs * 1000); const waterSecs = f.water / (decayBase * 1.2); waterTime = formatTime(waterSecs * 1000); } return <div key={f.id} className={`glass-panel p-4 rounded-xl border-t-4 transition-all ${needsAttention ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'border-slate-600'}`}><div className="flex justify-between items-start mb-2"><div className="font-bold text-white text-md">{BUILDINGS[f.key].name}</div>{needsAttention && <div className="text-[10px] bg-red-600 px-2 py-1 rounded text-white font-bold animate-pulse">!</div>}</div><div className="text-xs text-slate-400 mb-3 bg-slate-900/50 p-2 rounded inline-block">{f.animals ? `${f.animals.count} ${ANIMALS[f.animals.type].name}` : 'Empty Pen'}</div>{f.animals && <div className="space-y-2 mb-4"><div><div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>{feedType}</span><span>{Math.floor(f.feed)}%</span></div><div className="w-full bg-slate-800 h-1.5 rounded-full"><div className={`h-full rounded-full transition-all duration-500 ${f.feed<30?'bg-red-500':'bg-emerald-500'}`} style={{width:`${f.feed}%`}}></div></div></div><div><div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>Water</span><span>{Math.floor(f.water)}%</span></div><div className="w-full bg-slate-800 h-1.5 rounded-full"><div className={`h-full rounded-full transition-all duration-500 ${f.water<30?'bg-red-500':'bg-blue-500'}`} style={{width:`${f.water}%`}}></div></div></div></div>}{f.animals && !job && <div className="flex gap-2"><button onClick={()=>setModal({type:'chore', job:'feed', fid:f.id})} className="flex-1 bg-emerald-700/80 hover:bg-emerald-600 text-[10px] text-white py-3 rounded font-bold transition-colors">FEED</button><button onClick={()=>setModal({type:'chore', job:'water', fid:f.id})} className="flex-1 bg-blue-700/80 hover:bg-blue-600 text-[10px] text-white py-3 rounded font-bold transition-colors">WATER</button></div>}{job && <div className="mt-2 bg-slate-900/50 p-2 rounded"><div className="flex justify-between text-[10px] text-amber-400 font-bold mb-1"><span className="uppercase">{job.task}</span><span className="font-mono">{timeStr}</span></div><div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-amber-500 progress-bar-striped" style={{width:`${pct}%`}}></div></div></div>}</div> })}</div></div>
             };
             
-            const renderReal = () => (<div className="space-y-6"><div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-bold text-white flex items-center gap-2"><Icons.Map className="text-emerald-400"/> Land Management</h2><div className="text-xs text-slate-400 bg-slate-900/50 px-3 py-1 rounded-lg border border-white/5">Total Acres: {(gameState.fields||[]).filter(f=>f.owned).reduce((a,b)=>a+b.acres,0).toLocaleString()}</div></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{(gameState.fields||[]).map(f => ( <div key={f.id} className={`glass-panel p-6 relative overflow-hidden transition-all ${f.owned ? 'border-emerald-500/30 bg-emerald-900/10' : 'border-white/5 bg-slate-900/40 opacity-75 hover:opacity-100 hover:border-white/20'} ${f.leased ? 'border-blue-500/40' : ''}`}> <div className="flex justify-between items-center mb-4 relative z-10"><span className="font-black text-white text-2xl tracking-tighter">#{f.id}</span>{f.owned ? ( <span className="text-[10px] text-emerald-300 bg-emerald-500/20 px-2 py-1 rounded-md font-bold border border-emerald-500/30">{f.leased ? 'LEASED' : 'OWNED'}</span> ) : ( <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-1 rounded-md font-bold">FOR SALE</span> )}</div><div className="space-y-1 mb-6 relative z-10"><div className="text-sm text-slate-300 font-mono">{f.acres} Acres</div><div className="text-xs text-slate-500">Soil Quality: A+</div></div>{!f.owned && ( <div className="flex flex-col gap-2 relative z-10 group"><button onClick={()=>buyField(f.id)} className="w-full py-2 bg-slate-800 hover:bg-emerald-600 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg">Buy ${(f.acres*LAND_PRICE_PER_ACRE).toLocaleString()}</button><button onClick={()=>leaseField(f.id)} className="w-full py-2 bg-slate-800 hover:bg-blue-600 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg">Lease ${(f.acres*LAND_PRICE_PER_ACRE*LAND_LEASE_RATE).toLocaleString()}</button></div>)}<div className={`absolute -bottom-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-20 ${f.owned ? (f.leased ? 'bg-blue-500' : 'bg-emerald-500') : 'bg-slate-500'}`}></div></div> ))}</div></div>);
+            const renderReal = () => (<div className="space-y-6"><div className="flex justify-between items-center mb-4"><h2 className="text-xl lg:text-2xl font-bold text-white flex items-center gap-2"><Icons.Map className="text-emerald-400"/> Land</h2><div className="text-xs text-slate-400 bg-slate-900/50 px-3 py-1 rounded-lg border border-white/5">Owned: {(gameState.fields||[]).filter(f=>f.owned).reduce((a,b)=>a+b.acres,0).toLocaleString()}ac</div></div><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pb-20">{(gameState.fields||[]).map(f => ( <div key={f.id} className={`glass-panel p-4 relative overflow-hidden transition-all ${f.owned ? 'border-emerald-500/30 bg-emerald-900/10' : 'border-white/5 bg-slate-900/40 opacity-75 hover:opacity-100 hover:border-white/20'} ${f.leased ? 'border-blue-500/40' : ''}`}> <div className="flex justify-between items-center mb-4 relative z-10"><span className="font-black text-white text-xl tracking-tighter">#{f.id}</span>{f.owned ? ( <span className="text-[10px] text-emerald-300 bg-emerald-500/20 px-2 py-1 rounded-md font-bold border border-emerald-500/30">{f.leased ? 'LEASED' : 'OWNED'}</span> ) : ( <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-1 rounded-md font-bold">FOR SALE</span> )}</div><div className="space-y-1 mb-6 relative z-10"><div className="text-sm text-slate-300 font-mono">{f.acres} Acres</div><div className="text-xs text-slate-500">Soil Quality: A+</div></div>{!f.owned && ( <div className="flex flex-col gap-2 relative z-10 group"><button onClick={()=>buyField(f.id)} className="w-full py-3 bg-slate-800 hover:bg-emerald-600 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg">Buy ${(f.acres*LAND_PRICE_PER_ACRE).toLocaleString()}</button><button onClick={()=>leaseField(f.id)} className="w-full py-3 bg-slate-800 hover:bg-blue-600 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg">Lease ${(f.acres*LAND_PRICE_PER_ACRE*LAND_LEASE_RATE).toLocaleString()}</button></div>)}</div> ))}</div></div>);
             
             const renderStorage = () => {
                 const stats = getStorageStats();
@@ -1174,7 +1178,7 @@
                 const freeGrain = stats.grainCap - stats.cropUsed;
                 const freeMachine = stats.machineCap - stats.machineUsed;
 
-                return <div className="space-y-6"><h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.Box className="text-orange-400"/> Inventory Management</h2><div className="glass-panel p-6 border-l-4 border-blue-500 mb-6 bg-gradient-to-r from-blue-900/10 to-transparent"><h3 className="text-lg font-bold text-white mb-4">Capacity Overview</h3><div className="grid grid-cols-2 gap-8"><div><div className="flex justify-between text-sm mb-2"><span className="text-slate-300">Grain Silos</span><span className={freeGrain < 1000 ? "text-red-400 font-bold" : "text-emerald-400 font-mono"}>{freeGrain.toLocaleString()} bu Free</span></div><div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full ${grainPct > 90 ? 'bg-red-500' : 'bg-blue-500'} progress-bar-striped`} style={{width:`${grainPct}%`}}></div></div><div className="text-[10px] text-slate-500 mt-1 text-right">{stats.cropUsed.toLocaleString()} / {stats.grainCap.toLocaleString()} bu</div></div><div><div className="flex justify-between text-sm mb-2"><span className="text-slate-300">Machine Sheds</span><span className={freeMachine < 2 ? "text-red-400 font-bold" : "text-emerald-400 font-mono"}>{freeMachine} Slots Free</span></div><div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full ${machinePct > 90 ? 'bg-red-500' : 'bg-orange-500'} progress-bar-striped`} style={{width:`${machinePct}%`}}></div></div><div className="text-[10px] text-slate-500 mt-1 text-right">{stats.machineUsed} / {stats.machineCap} Vehicles</div></div></div></div><div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="glass-panel p-6"><h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Silo Storage (Harvest)</h3><div className="space-y-3">{Object.entries(gameState.consumables).filter(([k])=>['corn','soy','wheat','canola','sunflower','oats','barley','sorghum','rice'].includes(k)).map(([k,v]) => (<div key={k} className="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border border-white/5"><div className="capitalize text-slate-300 font-medium">{k}</div><div className="font-mono text-emerald-400 font-bold">{Math.floor(v).toLocaleString()} bu</div></div>))} {Object.keys(gameState.consumables).filter(k=>['corn','soy','wheat'].includes(k)).length === 0 && <div className="text-xs text-slate-500 italic">Silos are empty.</div>}</div></div><div className="glass-panel p-6"><h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Barn Supplies</h3><div className="space-y-3">{Object.entries(gameState.consumables).filter(([k])=>['tmr','hay','straw','fert','lime','seed_corn'].includes(k) || k.startsWith('seed_')).map(([k,v]) => {const isLow = v < 100; return (<div key={k} className={`flex justify-between items-center p-3 rounded-lg border transition-all ${isLow ? 'bg-red-900/20 border-red-500/30' : 'bg-slate-800/50 border-white/5'}`}><div className="capitalize text-slate-300 font-medium flex items-center gap-2">{k.replace('seed_','').toUpperCase()}{isLow && <span className="text-[8px] bg-red-500 text-white px-1 rounded">LOW</span>}</div><div className={`font-mono font-bold ${isLow ? 'text-red-400' : 'text-blue-400'}`}>{Math.floor(v).toLocaleString()}</div></div>)})}</div></div></div></div>
+                return <div className="space-y-6"><h2 className="text-xl lg:text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.Box className="text-orange-400"/> Inventory</h2><div className="glass-panel p-4 lg:p-6 border-l-4 border-blue-500 mb-6 bg-gradient-to-r from-blue-900/10 to-transparent"><h3 className="text-lg font-bold text-white mb-4">Capacity</h3><div className="grid grid-cols-2 gap-8"><div><div className="flex justify-between text-xs lg:text-sm mb-2"><span className="text-slate-300">Grain Silos</span><span className={freeGrain < 1000 ? "text-red-400 font-bold" : "text-emerald-400 font-mono"}>{freeGrain.toLocaleString()}</span></div><div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full ${grainPct > 90 ? 'bg-red-500' : 'bg-blue-500'} progress-bar-striped`} style={{width:`${grainPct}%`}}></div></div></div><div><div className="flex justify-between text-xs lg:text-sm mb-2"><span className="text-slate-300">Sheds</span><span className={freeMachine < 2 ? "text-red-400 font-bold" : "text-emerald-400 font-mono"}>{freeMachine}</span></div><div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-white/10"><div className={`h-full ${machinePct > 90 ? 'bg-red-500' : 'bg-orange-500'} progress-bar-striped`} style={{width:`${machinePct}%`}}></div></div></div></div></div><div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="glass-panel p-4 lg:p-6"><h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Harvested</h3><div className="space-y-3">{Object.entries(gameState.consumables).filter(([k])=>['corn','soy','wheat','canola','sunflower','oats','barley','sorghum','rice'].includes(k)).map(([k,v]) => (<div key={k} className="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border border-white/5"><div className="capitalize text-slate-300 font-medium text-xs">{k}</div><div className="font-mono text-emerald-400 font-bold text-sm">{Math.floor(v).toLocaleString()} bu</div></div>))} {Object.keys(gameState.consumables).filter(k=>['corn','soy','wheat'].includes(k)).length === 0 && <div className="text-xs text-slate-500 italic">Silos are empty.</div>}</div></div><div className="glass-panel p-4 lg:p-6"><h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Supplies</h3><div className="space-y-3">{Object.entries(gameState.consumables).filter(([k])=>['tmr','hay','straw','fert','lime','seed_corn'].includes(k) || k.startsWith('seed_')).map(([k,v]) => {const isLow = v < 100; return (<div key={k} className={`flex justify-between items-center p-3 rounded-lg border transition-all ${isLow ? 'bg-red-900/20 border-red-500/30' : 'bg-slate-800/50 border-white/5'}`}><div className="capitalize text-slate-300 font-medium flex items-center gap-2 text-xs">{k.replace('seed_','').toUpperCase()}{isLow && <span className="text-[8px] bg-red-500 text-white px-1 rounded">LOW</span>}</div><div className={`font-mono font-bold text-sm ${isLow ? 'text-red-400' : 'text-blue-400'}`}>{Math.floor(v).toLocaleString()}</div></div>)})}</div></div></div></div>
             };
 
             const renderModalContent = () => {
@@ -1200,11 +1204,11 @@
                 }
 
                 return (
-                    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                        <div className="bg-[#0f172a] border border-white/10 p-8 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl animate-[fadeIn_0.2s_ease-out]">
-                            <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tight">{modal.type.replace('_',' ')}</h3>
-                                <button onClick={()=>setModal(null)} className="text-red-500 font-bold">X</button>
+                    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 lg:p-4">
+                        <div className="bg-[#0f172a] border border-white/10 p-4 lg:p-8 rounded-2xl w-[95%] max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-[fadeIn_0.2s_ease-out]">
+                            <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4 sticky top-0 bg-[#0f172a] z-10">
+                                <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">{modal.type.replace('_',' ')}</h3>
+                                <button onClick={()=>setModal(null)} className="text-red-500 font-bold p-2 text-xl">X</button>
                             </div>
                             
                             {modal.type === 'buy_fuel' && (
@@ -1252,7 +1256,7 @@
                                     { (modal.state === 'Fallow' || modal.state === 'Stubble' || modal.state === 'Plant') && (
                                         <div className="space-y-3 p-4 bg-slate-900/50 rounded-xl border border-white/5">
                                             <div className="text-xs text-blue-400 font-bold uppercase">1. Select Crop Plan</div>
-                                            <div className="grid grid-cols-3 gap-2">
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                                 {Object.keys(CROPS).map(k => (
                                                     <button key={k} onClick={()=>setModal(prev => ({...prev, selectedCrop: k}))} className={`p-3 rounded-lg text-left border transition-all ${modal.selectedCrop===k ? 'border-emerald-500 bg-emerald-900/20' : 'border-slate-700 bg-slate-800 hover:bg-slate-700'}`}>
                                                         <div className="font-bold text-sm text-white">{CROPS[k].name}</div>
@@ -1269,7 +1273,7 @@
                                             {jobReqs.impCat.length > 0 && (
                                                 <RenderSelect label="Implement" categories={jobReqs.impCat} selected={modal.selectedImp} onChange={(v)=>setModal({...modal, selectedImp:v})} inventory={gameState.inventory} getEq={getEq} isBusy={isBusy} />
                                             )}
-                                            <div>
+                                            <div className="mb-2">
                                                 <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Operator ({jobReqs.role.join('/')})</label>
                                                 <select className="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-lg text-sm" onChange={(e)=>setModal({...modal, selectedEmp: parseInt(e.target.value)})}>
                                                     <option value="">-- Select --</option>
@@ -1281,11 +1285,11 @@
                                         </div>
 
                                         {jobReqs.needsTransport && (
-                                            <div className="space-y-4 border-l border-white/5 pl-6">
+                                            <div className="space-y-4 md:border-l md:border-white/5 md:pl-6 border-t border-white/5 pt-4 md:pt-0">
                                                 <div className="text-xs text-orange-400 font-bold uppercase border-b border-white/10 pb-2">Transport Team</div>
                                                 <RenderSelect label="Transport Vehicle" categories={['Tractor']} selected={modal.selectedTR2} onChange={(v)=>setModal({...modal, selectedTR2:v})} inventory={gameState.inventory} getEq={getEq} isBusy={isBusy} />
                                                 <RenderSelect label="Grain Trailer" categories={['Trailer']} selected={modal.selectedImp2} onChange={(v)=>setModal({...modal, selectedImp2:v})} inventory={gameState.inventory} getEq={getEq} isBusy={isBusy} />
-                                                <div>
+                                                <div className="mb-2">
                                                     <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Truck Driver</label>
                                                     <select className="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-lg text-sm" onChange={(e)=>setModal({...modal, selectedEmp2: parseInt(e.target.value)})}>
                                                         <option value="">-- Select Driver --</option>
@@ -1375,7 +1379,7 @@
                                     {Object.entries(BUILDINGS).filter(([k,v])=>v.category === 'Livestock').map(([k,v]) => (
                                          <div key={k} className="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-white/5 hover:border-white/20 transition-all">
                                             <div>
-                                                <div className="text-white font-bold">{v.name}</div>
+                                                <div className="text-white font-bold text-sm">{v.name}</div>
                                                 <div className="text-xs text-slate-400">Est. Time: {formatTime(v.buildTime)}</div>
                                             </div>
                                             <button onClick={()=>{
@@ -1400,14 +1404,14 @@
             };
 
             return (
-                <div className="h-screen flex overflow-hidden">
-                    <div className="w-20 lg:w-64 bg-slate-900/90 backdrop-blur-xl border-r border-white/5 flex flex-col justify-between p-4 z-20">
+                <div className="h-screen flex flex-col lg:flex-row overflow-hidden bg-[#020617]">
+                    <div className="hidden lg:flex w-64 bg-slate-900/90 backdrop-blur-xl border-r border-white/5 flex-col justify-between p-4 z-20">
                         <div className="space-y-8">
                             <div className="flex items-center gap-3 px-2">
                                 <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
                                     <Icons.Tractor className="text-white w-6 h-6"/>
                                 </div>
-                                <span className="font-black text-xl text-white hidden lg:block tracking-tight">JERSEY<br/><span className="text-blue-400">ROOTS</span></span>
+                                <span className="font-black text-xl text-white tracking-tight">JERSEY<br/><span className="text-blue-400">ROOTS</span></span>
                             </div>
                             
                             <nav className="space-y-2">
@@ -1428,7 +1432,7 @@
                                             {v === 'Storage' && <Icons.Box className="w-5 h-5"/>}
                                             {v === 'Market' && <Icons.Dollar className="w-5 h-5"/>}
                                             {v === 'Cloud' && <Icons.Cloud className="w-5 h-5"/>}
-                                            <span className="font-bold text-sm hidden lg:block">{v}</span>
+                                            <span className="font-bold text-sm">{v}</span>
                                         </button>
                                     )
                                 })}
@@ -1440,7 +1444,7 @@
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-6 lg:p-10 relative">
+                    <div className="flex-1 overflow-y-auto p-2 lg:p-10 relative pb-24 lg:pb-10 no-scrollbar">
                         <div className="max-w-7xl mx-auto">
                             {view === 'dashboard' && renderDash()}
                             {view === 'market' && renderMarket()}
@@ -1453,6 +1457,32 @@
                             {view === 'realestate' && renderReal()}
                             {view === 'storage' && renderStorage()}
                             {view === 'cloud' && renderCloud()}
+                        </div>
+                    </div>
+
+                    <div className="lg:hidden fixed bottom-0 left-0 w-full bg-slate-950/95 backdrop-blur-xl border-t border-white/10 z-50 overflow-x-auto no-scrollbar">
+                        <div className="flex p-2 gap-2 min-w-max">
+                             {['Dashboard', 'Market', 'Jobs', 'Livestock', 'Store', 'Garage', 'Bank', 'HR', 'Real Estate', 'Storage', 'Cloud'].map(v => {
+                                const isActive = view === v.toLowerCase().replace(' ','');
+                                const key = v.toLowerCase().replace(' ','');
+                                return (
+                                    <button key={v} onClick={() => setView(key)} 
+                                        className={`flex flex-col items-center justify-center p-3 rounded-xl min-w-[70px] transition-all ${isActive ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>
+                                        {v === 'Dashboard' && <Icons.Home className="w-6 h-6 mb-1"/>}
+                                        {v === 'Jobs' && <Icons.List className="w-6 h-6 mb-1"/>}
+                                        {v === 'Livestock' && <Icons.Barn className="w-6 h-6 mb-1"/>}
+                                        {v === 'Store' && <Icons.Box className="w-6 h-6 mb-1"/>}
+                                        {v === 'Garage' && <Icons.Wrench className="w-6 h-6 mb-1"/>}
+                                        {v === 'Bank' && <Icons.Bank className="w-6 h-6 mb-1"/>}
+                                        {v === 'HR' && <Icons.Users className="w-6 h-6 mb-1"/>}
+                                        {v === 'Real Estate' && <Icons.Map className="w-6 h-6 mb-1"/>}
+                                        {v === 'Storage' && <Icons.Box className="w-6 h-6 mb-1"/>}
+                                        {v === 'Market' && <Icons.Dollar className="w-6 h-6 mb-1"/>}
+                                        {v === 'Cloud' && <Icons.Cloud className="w-6 h-6 mb-1"/>}
+                                        <span className="text-[10px] font-bold whitespace-nowrap">{v}</span>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </div>
                     
