@@ -1,16 +1,3 @@
-This usually happens because of a **"null reference" error**. If the game tries to read the progress of a job that doesn't exist, or check the fuel level of a tank that isn't initialized, the whole page crashes and goes white.
-
-I have rewritten the **Garage** and **Store** logic with **safety guards**. Even if data is missing or corrupted, the page will now load (displaying "0" or "Empty" instead of crashing).
-
-### **Fixes Applied:**
-1.  **Crash Proofing:** Added checks `|| []` and `|| {}` everywhere. If the game looks for "active jobs" and finds nothing, it now just says "Idle" instead of breaking.
-2.  **Restored Store Bundles:** The "Bundles" tab is firmly fixed in the Store.
-3.  **Restored Garage Fuel:** The Fuel Depot card is restored in the Garage with the "Order Fuel" button.
-4.  **Restored Transactions:** The Finance page transaction list is fixed.
-
-**Save this as your final `.html` file.**
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1777,3 +1764,4 @@ I have rewritten the **Garage** and **Store** logic with **safety guards**. Even
     </script>
 </body>
 </html>
+
