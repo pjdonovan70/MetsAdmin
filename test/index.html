@@ -173,6 +173,7 @@
         const getEq = (id) => EQUIPMENT.find(e => e.id === id);
         
         const getSupplyName = (key) => {
+            if (!key) return "Unknown";
             if(key === 'fert') return 'Fertilizer';
             if(key === 'lime') return 'Lime';
             if(key === 'tmr') return 'TMR Feed';
@@ -508,7 +509,6 @@
                         deliveries = deliveries || [];
                         activeJobs = activeJobs || [];
                         facilities = facilities || [];
-                        consumables = consumables || {};
 
                         // ... Daily Reset Logic ...
                         if(dayNum !== lastDayReset) {
@@ -537,7 +537,7 @@
                             return true;
                         });
                         
-                        // Payroll (Weekly)
+                        // Payroll
                         const dateString = dateObj.toLocaleDateString();
                         if(dateObj.getDay() === 5 && lastPayroll !== dateString) {
                             let totalPayroll = 0;
@@ -703,7 +703,7 @@
                 return `0h ${m}m`;
             };
             const getStorageStats = () => {
-                const cropUsed = Object.keys(CROPS).reduce((acc, k) => acc + ((gameState.consumables || {})[k.toLowerCase()] || 0), 0);
+                let cropUsed = 0; Object.keys(CROPS).forEach(k => cropUsed += (gameState.consumables[k.toLowerCase()]||0));
                 let grainCap = 0, machineCap = 0, fuelCap = 0;
                 (gameState.facilities||[]).forEach(f => {
                     const def = BUILDINGS[f.key];
@@ -1162,7 +1162,7 @@
                             {gameState.construction.map((c, i) => {
                                 const def = BUILDINGS[c.key];
                                 const timeLeft = Math.max(0, c.endTime - now);
-                                if (!def) return null;
+                                if (!def) return null; // Safety
                                 return (
                                     <div key={i} className="mb-2 last:mb-0">
                                         <div className="flex justify-between text-white text-xs mb-1">
