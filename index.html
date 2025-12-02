@@ -30,7 +30,7 @@
                 radial-gradient(at 100% 0%, rgba(76, 29, 149, 0.3) 0px, transparent 50%),
                 url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
             color: #e2e8f0;
-            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+            overflow-x: hidden; 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -71,7 +71,6 @@
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-        /* Hide scrollbar for mobile nav */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
@@ -82,6 +81,9 @@
         .snow-bg .text-slate-400 { color: #64748b !important; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Menu Animation */
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -129,7 +131,8 @@
             Lock: ({className}) => <IconWrapper className={className}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></IconWrapper>,
             Mail: ({className}) => <IconWrapper className={className}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></IconWrapper>,
             Trash: ({className}) => <IconWrapper className={className}><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></IconWrapper>,
-            Save: ({className}) => <IconWrapper className={className}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></IconWrapper>
+            Save: ({className}) => <IconWrapper className={className}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></IconWrapper>,
+            Menu: ({className}) => <IconWrapper className={className}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></IconWrapper>
         };
 
         const DAY_MS = 86400000;
@@ -301,6 +304,7 @@
             const isResetting = useRef(false);
             const [fuelAmount, setFuelAmount] = useState(100);
             const [sellAmount, setSellAmount] = useState(0);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             
             // AUTH STATE
             const [currentUser, setCurrentUser] = useState(null);
@@ -1137,7 +1141,7 @@
                     </div>
                     
                     {/* Mobile Only Settings (Hard Reset/Logout) */}
-                    <div className="md:hidden mt-8 space-y-3 border-t border-white/10 pt-6">
+                    <div className="md:hidden mt-8 space-y-3 border-t border-white/10 pt-6 pb-24">
                         <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-2">Game Settings</h3>
                         <div className="text-xs text-slate-500 mb-2 truncate">{currentUser?.email}</div>
                         <div className="grid grid-cols-2 gap-3">
@@ -1157,7 +1161,7 @@
 
             const renderMarket = () => {
                 const currentMonth = new Date(now).getMonth();
-                return <div className="space-y-6">
+                return <div className="space-y-6 pb-24">
                     <h2 className="text-2xl font-bold text-white flex gap-2"><Icons.Dollar className="text-emerald-400"/> Commodity Market</h2>
                     
                     <div className="glass-panel p-4 md:p-6">
@@ -1227,7 +1231,7 @@
             };
 
             const renderJobs = () => (
-                <div className="space-y-6">
+                <div className="space-y-6 pb-24">
                     <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.List className="text-purple-400"/> Farm Schedule</h2>
                     <div className="grid grid-cols-1 gap-3">
                         {(gameState.miscTasks||[]).map(t => {
@@ -1282,7 +1286,7 @@
             );
 
             const renderStore = () => (
-                <div className="space-y-6">
+                <div className="space-y-6 pb-24">
                     <div className="flex gap-2 p-1 bg-slate-900/50 rounded-xl w-full md:w-fit border border-white/10 overflow-x-auto">
                         {['eq','sup','bundle'].map(tab => (
                             <button key={tab} onClick={()=>setStoreTab(tab)} 
@@ -1360,7 +1364,7 @@
                     v.category === 'Storage' || v.category === 'Infrastructure'
                 );
 
-                return <div className="space-y-6">
+                return <div className="space-y-6 pb-24">
                     <div className="glass-panel p-4 md:p-6 rounded-2xl border-l-4 border-orange-500 relative overflow-hidden mb-6 bg-gradient-to-r from-orange-900/20 to-transparent">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center relative z-10 gap-3">
                             <div>
@@ -1483,7 +1487,7 @@
             };
             
             const renderBank = () => (
-                <div className="space-y-6">
+                <div className="space-y-6 pb-24">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="glass-panel p-6 border-l-4 border-emerald-500 bg-gradient-to-r from-emerald-900/10 to-transparent">
                             <div className="text-emerald-400 text-xs font-bold uppercase mb-1">Liquid Capital</div>
@@ -1521,7 +1525,7 @@
             );
             
             const renderHR = () => (
-                <div className="glass-panel p-4 md:p-8">
+                <div className="glass-panel p-4 md:p-8 pb-24">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold text-white">Workforce Management</h2>
                         <div className="text-xs text-slate-400">Total Employees: {gameState.employees.length - 1}</div>
@@ -1561,7 +1565,7 @@
                 const activeFacilities = (gameState.facilities||[]).filter(f => BUILDINGS[f.key] && BUILDINGS[f.key].category === 'Livestock');
                 const pendingConstruction = (gameState.construction||[]).filter(c => BUILDINGS[c.key] && BUILDINGS[c.key].category === 'Livestock');
 
-                return <div className="space-y-6">
+                return <div className="space-y-6 pb-24">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <h2 className="text-2xl font-bold text-white flex items-center gap-2"><Icons.Barn className="text-orange-400"/> Livestock Operations</h2>
                         <button onClick={()=>setModal({type:'build', tab:'live'})} className="btn-modern bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-500 w-full sm:w-auto">+ New Pen</button>
@@ -1636,7 +1640,7 @@
             };
             
             const renderReal = () => (
-                <div className="space-y-6">
+                <div className="space-y-6 pb-24">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                         <h2 className="text-2xl font-bold text-white flex items-center gap-2"><Icons.Map className="text-emerald-400"/> Land Management</h2>
                         <div className="text-xs text-slate-400 bg-slate-900/50 px-3 py-1 rounded-lg border border-white/5">
@@ -1684,7 +1688,7 @@
                 const freeGrain = stats.grainCap - stats.cropUsed;
                 const freeMachine = stats.machineCap - stats.machineUsed;
 
-                return <div className="space-y-6">
+                return <div className="space-y-6 pb-24">
                     <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><Icons.Box className="text-orange-400"/> Inventory Management</h2>
                     
                     <div className="glass-panel p-4 md:p-6 border-l-4 border-blue-500 mb-6 bg-gradient-to-r from-blue-900/10 to-transparent">
@@ -1982,6 +1986,9 @@
             if (isLoading) return <div className="h-screen flex items-center justify-center text-white font-black animate-pulse">CONNECTING TO CLOUD...</div>;
             if (!currentUser) return <AuthGate />;
 
+            const primaryNav = ['Dashboard', 'Jobs', 'Market', 'Store'];
+            const menuNav = ['Livestock', 'Garage', 'Bank', 'HR', 'Real Estate', 'Storage'];
+
             return (
                 <div className="h-screen flex flex-col md:flex-row overflow-hidden">
                     
@@ -2014,7 +2021,7 @@
                             </div>
                             
                             <nav className="space-y-2">
-                                {['Dashboard', 'Market', 'Jobs', 'Livestock', 'Store', 'Garage', 'Bank', 'HR', 'Real Estate', 'Storage'].map(v => {
+                                {[...primaryNav, ...menuNav].map(v => {
                                     const isActive = view === v.toLowerCase().replace(' ','');
                                     const key = v.toLowerCase().replace(' ','');
                                     return (
@@ -2050,30 +2057,57 @@
                         </div>
                     </div>
 
-                    {/* MOBILE BOTTOM NAV */}
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-white/10 z-50 flex overflow-x-auto no-scrollbar pb-safe">
-                         {['Dashboard', 'Market', 'Jobs', 'Livestock', 'Store', 'Garage', 'Bank', 'HR', 'Real Estate', 'Storage'].map(v => {
-                                const isActive = view === v.toLowerCase().replace(' ','');
-                                const key = v.toLowerCase().replace(' ','');
-                                return (
-                                    <button key={v} onClick={() => setView(key)} 
-                                        className={`flex flex-col items-center justify-center min-w-[70px] py-2 px-1 gap-1 ${isActive ? 'text-blue-400' : 'text-slate-500'}`}>
-                                        <div className={`${isActive ? 'bg-blue-900/30 p-1.5 rounded-lg' : ''}`}>
-                                            {v === 'Dashboard' && <Icons.Home className="w-6 h-6"/>}
-                                            {v === 'Jobs' && <Icons.List className="w-6 h-6"/>}
+                    {/* MOBILE OVERLAY MENU */}
+                    {mobileMenuOpen && (
+                        <div className="md:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}>
+                            <div className="absolute bottom-24 left-4 right-4 bg-[#0f172a] border border-white/10 rounded-2xl p-4 grid grid-cols-3 gap-3 animate-[slideUp_0.2s_ease-out]" onClick={e => e.stopPropagation()}>
+                                {menuNav.map(v => {
+                                    const key = v.toLowerCase().replace(' ','');
+                                    const isActive = view === key;
+                                    return (
+                                        <button key={v} onClick={() => { setView(key); setMobileMenuOpen(false); }} 
+                                            className={`flex flex-col items-center justify-center py-3 px-1 gap-2 rounded-xl border ${isActive ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400'}`}>
                                             {v === 'Livestock' && <Icons.Barn className="w-6 h-6"/>}
-                                            {v === 'Store' && <Icons.Box className="w-6 h-6"/>}
                                             {v === 'Garage' && <Icons.Wrench className="w-6 h-6"/>}
                                             {v === 'Bank' && <Icons.Bank className="w-6 h-6"/>}
                                             {v === 'HR' && <Icons.Users className="w-6 h-6"/>}
                                             {v === 'Real Estate' && <Icons.Map className="w-6 h-6"/>}
                                             {v === 'Storage' && <Icons.Box className="w-6 h-6"/>}
+                                            <span className="text-[10px] font-bold">{v}</span>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MOBILE BOTTOM NAV */}
+                    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-white/10 z-50 grid grid-cols-5 items-center pb-safe">
+                         {primaryNav.map(v => {
+                                const isActive = view === v.toLowerCase().replace(' ','');
+                                const key = v.toLowerCase().replace(' ','');
+                                return (
+                                    <button key={v} onClick={() => { setView(key); setMobileMenuOpen(false); }} 
+                                        className={`flex flex-col items-center justify-center py-3 px-1 gap-1 ${isActive ? 'text-blue-400' : 'text-slate-500'}`}>
+                                        <div className={`${isActive ? 'bg-blue-900/30 p-1.5 rounded-lg' : ''}`}>
+                                            {v === 'Dashboard' && <Icons.Home className="w-6 h-6"/>}
+                                            {v === 'Jobs' && <Icons.List className="w-6 h-6"/>}
+                                            {v === 'Store' && <Icons.Box className="w-6 h-6"/>}
                                             {v === 'Market' && <Icons.Dollar className="w-6 h-6"/>}
                                         </div>
-                                        <span className="text-[9px] font-bold">{v}</span>
+                                        <span className="text-[10px] font-bold">{v}</span>
                                     </button>
                                 )
                             })}
+                            
+                            {/* MENU BUTTON */}
+                            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                                className={`flex flex-col items-center justify-center py-3 px-1 gap-1 ${mobileMenuOpen ? 'text-blue-400' : 'text-slate-500'}`}>
+                                <div className={`${mobileMenuOpen ? 'bg-blue-900/30 p-1.5 rounded-lg' : ''}`}>
+                                    <Icons.Menu className="w-6 h-6"/>
+                                </div>
+                                <span className="text-[10px] font-bold">Menu</span>
+                            </button>
                     </div>
 
                     {/* MAIN CONTENT AREA */}
