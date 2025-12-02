@@ -1,12 +1,3 @@
-I have identified the issues causing the white screen and the barn bug:
-1.  **Barn Bug:** The purchase logic wasn't correctly updating the animal count because of how the data was being passed between the modal and the main state.
-2.  **White Screen on Feed/Water:** The `RenderSelect` component (which shows the list of tractors/implements) was crashing when it encountered `undefined` data while checking if a machine was "Busy".
-
-I have rewritten the `buyAnim`, `RenderSelect`, and `startJob` functions to be "crash-proof".
-
-**Copy this complete code.** It replaces everything.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1854,3 +1845,4 @@ I have rewritten the `buyAnim`, `RenderSelect`, and `startJob` functions to be "
     </script>
 </body>
 </html>
+
