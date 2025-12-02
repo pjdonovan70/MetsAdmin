@@ -888,10 +888,16 @@
             const buy = (item, type, qty=1) => { 
                 const cost = type==='eq'?item.cost:item.val*qty; if(gameState.money<cost) return alert("Funds");
                 const itemName = item.name || item.key;
+                
+                // REAL TIME DELIVERY TIMERS
+                let delay = 5000; // default (unused)
+                if (type === 'eq') delay = 24 * HOUR_MS; // 24 Hours for Equipment
+                else if (type === 'sup') delay = 1 * HOUR_MS; // 1 Hour for Supplies
+
                 setGameState(prev=>({
                     ...prev, 
                     money:prev.money-cost, 
-                    deliveries:[...prev.deliveries, {id:item.id||item.key, name:itemName, type, qty, at:Date.now()+5000}],
+                    deliveries:[...prev.deliveries, {id:item.id||item.key, name:itemName, type, qty, at:Date.now() + delay}],
                     transactions: [{id:Date.now(), desc: `Bought ${itemName} (x${qty})`, amount: -cost, date:Date.now()}, ...prev.transactions]
                 })); 
             };
@@ -900,7 +906,7 @@
                 setGameState(prev=>({
                     ...prev, 
                     money:prev.money-cost, 
-                    deliveries:[...prev.deliveries, {id:'diesel',name:'Diesel',type:'sup',qty:parseFloat(fuelAmount),at:Date.now()+5000}],
+                    deliveries:[...prev.deliveries, {id:'diesel',name:'Diesel',type:'sup',qty:parseFloat(fuelAmount),at:Date.now() + (1 * HOUR_MS)}], // 1 Hour
                     transactions: [{id:Date.now(), desc: `Refuel (${fuelAmount}gal)`, amount: -cost, date:Date.now()}, ...prev.transactions]
                 })); setModal(null);
             };
@@ -962,7 +968,7 @@
                  setGameState(p=>({
                      ...p, 
                      money:p.money-cost, 
-                     deliveries:[...p.deliveries, {type:'anim', targetId:fid, id:k, name:ANIMALS[k].name, qty:n, at:Date.now()+5000}],
+                     deliveries:[...p.deliveries, {type:'anim', targetId:fid, id:k, name:ANIMALS[k].name, qty:n, at:Date.now() + (12 * HOUR_MS)}], // 12 Hours
                      transactions: [{id:Date.now(), desc: `Bought ${n} ${ANIMALS[k].name}`, amount: -cost, date:Date.now()}, ...p.transactions]
                  })); setModal(null);
             };
@@ -978,7 +984,7 @@
                         name: item.name,
                         type: 'eq',
                         qty: 1,
-                        at: Date.now() + 5000,
+                        at: Date.now() + (24 * HOUR_MS), // 24 Hours
                         mode: 'lease'
                     }],
                     transactions: [{id:Date.now(), desc:`Lease Down Pmt: ${item.name}`, amount:-cost, date:Date.now()}, ...prev.transactions]
