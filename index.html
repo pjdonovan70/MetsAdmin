@@ -1,35 +1,10 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetsSky | Admin Dashboard</title>
     
-    <!-- --- SOCIAL MEDIA MASTER CARD & SEO --- -->
-    <title>MetsSky | The Dynasty</title>
-    <meta name="description" content="The ultimate hub for NY Mets fans. Live roster moves, fan rants, news wire, and the 2026 dynasty schedule.">
-    
-    <!-- Open Graph / Bluesky / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://metssky.web.app/">
-    <meta property="og:title" content="MetsSky | The Dynasty">
-    <meta property="og:description" content="The ultimate hub for NY Mets fans. Live roster moves, fan rants, and the 2026 dynasty schedule.">
-    <meta property="og:image" content="https://metssky.web.app/icon.png">
-
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MetsSky | The Dynasty">
-    <meta name="twitter:description" content="The ultimate hub for NY Mets fans.">
-    <meta name="twitter:image" content="https://metssky.web.app/icon.png">
-
-    <!-- PWA & Icon Settings -->
-    <meta name="theme-color" content="#002D72">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="icon" type="image/png" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MetsSky">
-
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -40,61 +15,27 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; background-image: radial-gradient(at 0% 0%, #002D72 0, transparent 50%), radial-gradient(at 100% 100%, #FF5910 0, transparent 50%); background-attachment: fixed; overscroll-behavior-y: none; }
-        .glass-panel { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .pulse-dot { animation: pulse-green 2s infinite; }
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-        .chat-anim { animation: slide-up 0.3s ease-out; }
-        @keyframes slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; background-image: radial-gradient(at 0% 0%, #002D72 0, transparent 50%), radial-gradient(at 100% 100%, #FF5910 0, transparent 50%); background-attachment: fixed; }
+        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+        .input-field { width: 100%; background-color: #1e293b; border: 1px solid #334155; padding: 0.75rem; border-radius: 0.5rem; color: white; outline: none; transition: all 0.2s; }
+        .input-field:focus { border-color: #f97316; ring: 2px solid #f97316; }
+        .btn-primary { background-color: #f97316; color: white; font-weight: bold; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background 0.2s; }
+        .btn-primary:hover { background-color: #ea580c; }
+        .btn-secondary { background-color: #3b82f6; color: white; font-weight: bold; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background 0.2s; }
+        .btn-secondary:hover { background-color: #2563eb; }
+        .btn-yellow { background-color: #eab308; color: white; font-weight: bold; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: background 0.2s; }
+        .btn-yellow:hover { background-color: #ca8a04; }
     </style>
 </head>
-<body class="text-slate-200 font-sans selection:bg-orange-500/30">
+<body class="text-slate-200">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        const formatDate = (d) => { if(!d) return ''; try { const date = new Date(d); if(isNaN(date.getTime())) return ''; return date.toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'}); } catch(e){return '';} };
-        
-        // --- ICONS ---
-        const Icons = {
-            Home: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-            Trash2: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>,
-            Link: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
-            RefreshCw: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>,
-            Calendar: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
-            X: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-            Users: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-            ClipboardList: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>,
-            Tv: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>,
-            Play: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>,
-            MessageSquare: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-            Edit2: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>,
-            FileText: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
-            Send: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
-            Minimize2: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>,
-            Cloud: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5c-1.45 0-2.748.59-3.714 1.541A5.496 5.496 0 0 0 6 13.5A5.506 5.506 0 0 0 11.5 19h6Z"/><path d="M17.5 19c2.485 0 4.5-2.015 4.5-4.5S19.985 10 17.5 10c-.16 0-.317.009-.471.025A5.5 5.5 0 0 0 12 5c-2.598 0-4.766 1.814-5.316 4.233A5.503 5.503 0 0 0 2 13.5C2 16.537 4.463 19 7.5 19h10Z"/></svg>,
-            ArrowUpCircle: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>,
-            ArrowDownCircle: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m16 12-4 4-4-4"/><path d="M12 8v8"/></svg>,
-            Newspaper: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
-            LogOut: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
-            BookOpen: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-            Mail: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
-            Lock: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-            User: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-            Briefcase: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
-            Activity: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
-            Shuffle: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l14.2-17"/><path d="M2 5h1.4c1.3 0 2.5.6 3.3 1.7l14.2 17"/></svg>,
-            Share: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>,
-            Bluesky: ({className}) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 568 501" fill="currentColor" className={className}><path d="M123.121 33.664C188.241 86.551 269.601 169.041 284 199.16C298.399 169.041 379.759 86.551 444.879 33.664C495.278 -7.269 586.443 -21.465 553.528 66.514C535.19 115.531 462.641 278.11 438.031 328.01C427.682 348.995 385.498 376.015 358.309 375.375C309.803 374.233 294.625 329.873 284 316.63C273.375 329.873 258.197 374.233 209.691 375.375C182.502 376.015 140.318 348.995 129.969 328.01C105.359 278.11 32.81 115.531 14.472 66.514C-18.443 -21.465 72.722 -7.269 123.121 33.664Z"></path><path d="M284 416.545C227.142 435.545 142.368 518.261 114.761 487.669C104.974 476.825 110.873 429.541 142.368 387.545C178.508 339.356 250.781 339.356 284 387.545C317.219 339.356 389.492 339.356 425.632 387.545C457.127 429.541 463.026 476.825 453.239 487.669C425.632 518.261 340.858 435.545 284 416.545Z"></path></svg>
-        };
+        const { useState, useEffect } = React;
 
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAkDUZZnh_AoKhBe-ntB1I4-QJKyiaEeg8",
             authDomain: "rollcall-e5e3a.firebaseapp.com",
@@ -104,1132 +45,380 @@
             appId: "1:301776745476:web:49d23434d590135c7df151"
         };
 
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const storage = firebase.storage();
-        
-        db.enablePersistence().catch(err => {
-            if (err.code == 'failed-precondition') { console.log("Persistence failed: Multiple tabs open."); } 
-            else if (err.code == 'unimplemented') { console.log("Persistence not supported by browser."); }
-        });
 
-        // --- COMPONENTS ---
-
-        const CommentsSection = ({ postId, currentUser }) => {
-            const [comments, setComments] = useState([]); 
-            const [text, setText] = useState('');
-            useEffect(() => { 
-                if(!postId) return; 
-                const unsubscribe = db.collection('mets_comments').where('postId', '==', postId).onSnapshot(s => { 
-                    const d = s.docs.map(x=>({id:x.id,...x.data()})); 
-                    d.sort((a,b)=>(a.createdAt?.seconds||0)-(b.createdAt?.seconds||0)); 
-                    setComments(d); 
-                }); 
-                return () => unsubscribe(); 
-            }, [postId]);
-            const post = async (e) => { 
-                e.preventDefault(); 
-                if(!text.trim() || !currentUser) return; 
-                try {
-                    await db.collection('mets_comments').add({ postId, text, authorName: currentUser.displayName || 'Fan', authorId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); 
-                    setText(''); 
-                } catch(e) {
-                    alert("Comment failed: " + e.message);
-                }
-            };
-            return ( <div className="mt-4 pt-4 border-t border-white/5 bg-black/20 p-4 rounded-xl animate-fade-in"> <h5 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Comments ({comments.length})</h5> <div className="space-y-3 mb-4 max-h-60 overflow-y-auto custom-scrollbar"> {comments.map(c => ( <div key={c.id} className="bg-slate-800/50 p-3 rounded-lg border border-white/5"> <div className="flex justify-between items-start"> <span className="text-[10px] font-bold text-blue-400">{c.authorName}</span> <span className="text-[10px] text-slate-600">{c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}</span> </div> <div className="text-sm text-slate-200 mt-1">{c.text}</div> </div> ))} {comments.length === 0 && <div className="text-center text-slate-600 text-xs italic py-2">No comments yet.</div>} </div> {currentUser ? ( <form onSubmit={post} className="flex gap-2"> <input type="text" placeholder="Write a comment..." className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" value={text} onChange={e => setText(e.target.value)} /> <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg"><Icons.Send className="w-4 h-4"/></button> </form> ) : <div className="text-center text-xs text-slate-500 italic">Sign in to comment.</div>} </div> );
+        // --- ICONS ---
+        const Icons = {
+            Edit: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>,
+            Save: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>,
+            Trash: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>,
+            LogOut: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>,
+            Plus: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg>,
+            Tv: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
         };
 
-        const PlayerCard = ({ player, onDelete, currentUser }) => ( 
-            <div className="glass-panel p-4 rounded-2xl border border-white/10 flex items-center gap-4 relative group"> 
-                <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-lg font-black text-white border border-white/10"> {player.name ? player.name[0] : '?'} </div> 
-                <div> 
-                    <h4 className="font-bold text-white">{player.name}</h4> 
-                    <p className="text-xs text-slate-400 italic">"{player.vibe || 'Just chilling'}"</p> 
-                </div>
-                {currentUser && (
-                    <button onClick={() => onDelete(player.id)} className="absolute top-4 right-4 text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Icons.Trash2 className="w-4 h-4"/></button>
-                )}
-            </div> 
-        );
-        
-        const LinkCard = ({ link }) => (
-            <div className="glass-panel p-4 rounded-2xl border border-white/10 hover:border-cyan-500/50 transition-all flex justify-between items-center group gap-4">
-                <div className="flex items-center gap-4 overflow-hidden flex-1">
-                    <div className="bg-cyan-900/30 p-3 rounded-xl text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
-                        <Icons.Link className="w-5 h-5"/>
-                    </div>
-                    <div className="min-w-0">
-                        <div className="font-bold text-white truncate group-hover:text-cyan-400 transition-colors text-sm md:text-base">{link.title}</div>
-                        <div className="text-xs text-slate-500 truncate">{link.url}</div>
-                    </div>
-                </div>
-                <a href={link.url} target="_blank" className="px-4 py-2 bg-slate-800 hover:bg-cyan-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shrink-0">Visit</a>
-            </div>
-        );
+        // --- LOGIN ---
+        const Login = () => {
+            const [email, setEmail] = useState('');
+            const [pass, setPass] = useState('');
+            const [error, setError] = useState('');
 
-        const RantCard = ({ rant, currentUser, onDelete }) => {
-            const [showComments, setShowComments] = useState(false);
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                try { await auth.signInWithEmailAndPassword(email, pass); } 
+                catch (err) { setError(err.message); }
+            };
+
             return (
-                <div className="glass-panel p-6 rounded-3xl border border-white/5 hover:border-red-500/30 transition-all relative group">
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center gap-3">
-                            {rant.authorPhoto ? <img src={rant.authorPhoto} className="w-10 h-10 rounded-full border border-white/10"/> : <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold">{rant.authorName ? rant.authorName[0] : 'U'}</div>}
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <form onSubmit={handleLogin} className="glass p-8 rounded-2xl w-full max-w-sm space-y-6">
+                        <div className="text-center">
+                            <h1 className="text-3xl font-black italic">MetsSky <span className="text-orange-500">Admin</span></h1>
+                            <p className="text-slate-400 text-sm">Command Center Access</p>
+                        </div>
+                        {error && <div className="bg-red-500/20 text-red-400 p-3 rounded text-sm border border-red-500/30">{error}</div>}
+                        <div className="space-y-4">
+                            <input type="email" placeholder="Email" className="input-field" value={email} onChange={e=>setEmail(e.target.value)} required />
+                            <input type="password" placeholder="Password" className="input-field" value={pass} onChange={e=>setPass(e.target.value)} required />
+                        </div>
+                        <button type="submit" className="btn-primary w-full">Sign In</button>
+                    </form>
+                </div>
+            );
+        };
+
+        // --- HOMEPAGE SETTINGS (SPLIT) ---
+        const HomepageSettings = () => {
+            const [config, setConfig] = useState({
+                randomMetName: '', randomMetUrl: '',
+                countdownTitle: '', countdownDate: ''
+            });
+            const [metStatus, setMetStatus] = useState('');
+            const [countStatus, setCountStatus] = useState('');
+
+            useEffect(() => {
+                const unsub = db.collection('mets_settings').doc('config').onSnapshot(doc => {
+                    if (doc.exists) setConfig(doc.data());
+                });
+                return () => unsub();
+            }, []);
+
+            const saveMet = async () => {
+                setMetStatus('Saving...');
+                try {
+                    await db.collection('mets_settings').doc('config').set({
+                        randomMetName: config.randomMetName,
+                        randomMetUrl: config.randomMetUrl
+                    }, { merge: true });
+                    setMetStatus('Saved!');
+                    setTimeout(() => setMetStatus(''), 2000);
+                } catch (e) { setMetStatus('Error'); }
+            };
+
+            const saveCountdown = async () => {
+                setCountStatus('Saving...');
+                try {
+                    await db.collection('mets_settings').doc('config').set({
+                        countdownTitle: config.countdownTitle,
+                        countdownDate: config.countdownDate
+                    }, { merge: true });
+                    setCountStatus('Saved!');
+                    setTimeout(() => setCountStatus(''), 2000);
+                } catch (e) { setCountStatus('Error'); }
+            };
+
+            return (
+                <div className="space-y-8">
+                    {/* Random Met */}
+                    <div className="glass p-6 rounded-2xl border-l-4 border-orange-500">
+                        <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                            <span className="bg-orange-500/20 p-2 rounded text-orange-500"><Icons.Edit/></span>
+                            Random Met of the Day
+                        </h2>
+                        <div className="grid grid-cols-1 gap-4 mb-4">
                             <div>
-                                <div className="font-bold text-white text-sm">{rant.authorName}</div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">{rant.mood} • {rant.createdAt ? new Date(rant.createdAt.seconds * 1000).toLocaleDateString() : 'Just Now'}</div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Player Name</label>
+                                <input className="input-field" value={config.randomMetName} onChange={e => setConfig({...config, randomMetName: e.target.value})} placeholder="e.g. Benny Agbayani" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Stats Link (URL)</label>
+                                <input className="input-field text-blue-400" value={config.randomMetUrl} onChange={e => setConfig({...config, randomMetUrl: e.target.value})} placeholder="https://..." />
                             </div>
                         </div>
-                        {currentUser && currentUser.uid === rant.authorId && (
-                            <button onClick={() => onDelete(rant.id)} className="text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Icons.Trash2 className="w-4 h-4"/></button>
-                        )}
+                        <div className="flex items-center gap-4">
+                            <button onClick={saveMet} className="btn-primary flex items-center gap-2">Update Random Met</button>
+                            {metStatus && <span className="text-green-400 font-bold animate-pulse">{metStatus}</span>}
+                        </div>
                     </div>
-                    <h4 className="font-black text-white text-lg mb-2">{rant.topic}</h4>
-                    <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{rant.content}</p>
-                    <div className="mt-4 pt-4 border-t border-white/5">
-                        <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
-                            <Icons.MessageSquare className="w-4 h-4"/> {showComments ? 'Hide Comments' : 'Reply / View Comments'}
+
+                    {/* Countdown */}
+                    <div className="glass p-6 rounded-2xl border-l-4 border-blue-500">
+                        <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                            <span className="bg-blue-500/20 p-2 rounded text-blue-500"><Icons.Edit/></span>
+                            Countdown Timer
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Event Title</label>
+                                <input className="input-field" value={config.countdownTitle} onChange={e => setConfig({...config, countdownTitle: e.target.value})} placeholder="e.g. Opening Day" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Date</label>
+                                <input type="date" className="input-field" value={config.countdownDate} onChange={e => setConfig({...config, countdownDate: e.target.value})} />
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button onClick={saveCountdown} className="btn-secondary flex items-center gap-2">Update Countdown</button>
+                            {countStatus && <span className="text-green-400 font-bold animate-pulse">{countStatus}</span>}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MEDIA MANAGER ---
+        const MediaManager = () => {
+            const [channels, setChannels] = useState([]);
+            const [form, setForm] = useState({ name: '', url: '' });
+            const [loading, setLoading] = useState(false);
+
+            useEffect(() => {
+                const unsub = db.collection('mets_channels').orderBy('createdAt', 'desc').onSnapshot(snap => {
+                    setChannels(snap.docs.map(d => ({id: d.id, ...d.data()})));
+                });
+                return () => unsub();
+            }, []);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!form.name || !form.url) return;
+                setLoading(true);
+                try {
+                    await db.collection('mets_channels').add({
+                        ...form,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    setForm({ name: '', url: '' });
+                } catch(e) { alert(e.message); }
+                setLoading(false);
+            };
+
+            const handleDelete = async (id) => {
+                if(confirm("Delete this media link?")) {
+                    await db.collection('mets_channels').doc(id).delete();
+                }
+            };
+
+            return (
+                <div className="space-y-8">
+                    {/* Add Form */}
+                    <div className="glass p-6 rounded-2xl border-l-4 border-yellow-500">
+                        <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                            <span className="bg-yellow-500/20 p-2 rounded text-yellow-500"><Icons.Plus/></span>
+                            Add Media Channel
+                        </h2>
+                        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4">
+                            <input className="input-field flex-1" placeholder="Channel Name (e.g. SNY)" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
+                            <input className="input-field flex-1" placeholder="Link URL" value={form.url} onChange={e => setForm({...form, url: e.target.value})} required />
+                            <button type="submit" disabled={loading} className="btn-yellow whitespace-nowrap">
+                                {loading ? 'Adding...' : 'Add Link'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* List */}
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Active Channels ({channels.length})</h3>
+                        {channels.map(item => (
+                            <div key={item.id} className="glass p-4 rounded-xl flex justify-between items-center group">
+                                <div className="flex items-center gap-4 overflow-hidden">
+                                    <div className="bg-slate-800 p-2 rounded-lg text-yellow-500"><Icons.Tv/></div>
+                                    <div className="min-w-0">
+                                        <div className="font-bold text-white truncate">{item.name}</div>
+                                        <div className="text-xs text-blue-400 truncate">{item.url}</div>
+                                    </div>
+                                </div>
+                                <button onClick={() => handleDelete(item.id)} className="bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white p-2 rounded-lg transition">
+                                    <Icons.Trash/>
+                                </button>
+                            </div>
+                        ))}
+                        {channels.length === 0 && <div className="text-center text-slate-500 py-4 italic">No media links yet.</div>}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- BLOG MANAGER ---
+        const BlogManager = ({ user }) => {
+            const [posts, setPosts] = useState([]);
+            const [isEditing, setIsEditing] = useState(null);
+            const [form, setForm] = useState({ title: '', content: '', date: new Date().toISOString().split('T')[0], imageUrl: '' });
+            const [file, setFile] = useState(null);
+            const [loading, setLoading] = useState(false);
+
+            useEffect(() => {
+                const unsub = db.collection('mets_blog').orderBy('date', 'desc').onSnapshot(snap => {
+                    setPosts(snap.docs.map(d => ({id: d.id, ...d.data()})));
+                });
+                return () => unsub();
+            }, []);
+
+            const startEdit = (post) => {
+                setIsEditing(post.id);
+                setForm(post);
+                window.scrollTo({ top: 300, behavior: 'smooth' });
+            };
+
+            const cancelEdit = () => {
+                setIsEditing(null);
+                setForm({ title: '', content: '', date: new Date().toISOString().split('T')[0], imageUrl: '' });
+                setFile(null);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    let imageUrl = form.imageUrl;
+                    if (file) {
+                        const ref = storage.ref(`blog_images/${Date.now()}_${file.name}`);
+                        await ref.put(file);
+                        imageUrl = await ref.getDownloadURL();
+                    }
+
+                    const postData = {
+                        ...form,
+                        imageUrl,
+                        authorName: user.displayName || 'Admin',
+                        authorId: user.uid,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (isEditing) {
+                        await db.collection('mets_blog').doc(isEditing).update(postData);
+                    } else {
+                        await db.collection('mets_blog').add({
+                            ...postData,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    cancelEdit();
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+                setLoading(false);
+            };
+
+            const handleDelete = async (id) => {
+                if (confirm("Are you sure you want to delete this post?")) {
+                    await db.collection('mets_blog').doc(id).delete();
+                }
+            };
+
+            return (
+                <div className="space-y-8">
+                    <div className="glass p-6 rounded-2xl border-l-4 border-purple-500">
+                        <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                            <span className="bg-purple-500/20 p-2 rounded text-purple-500"><Icons.Edit/></span>
+                            {isEditing ? 'Edit Blog Post' : 'Write New Post'}
+                        </h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <input className="input-field text-lg font-bold" placeholder="Headline" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="date" className="input-field" value={form.date} onChange={e => setForm({...form, date: e.target.value})} required />
+                                <input type="file" className="input-field text-sm" onChange={e => setFile(e.target.files[0])} />
+                            </div>
+                            <textarea className="input-field h-40" placeholder="Blog content..." value={form.content} onChange={e => setForm({...form, content: e.target.value})} required></textarea>
+                            <div className="flex gap-3">
+                                <button type="submit" disabled={loading} className="btn-primary w-full bg-purple-600 hover:bg-purple-500">
+                                    {loading ? 'Processing...' : (isEditing ? 'Update Post' : 'Publish Post')}
+                                </button>
+                                {isEditing && <button type="button" onClick={cancelEdit} className="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded font-bold">Cancel</button>}
+                            </div>
+                        </form>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Post History ({posts.length})</h3>
+                        {posts.map(post => (
+                            <div key={post.id} className="glass p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex items-center gap-4">
+                                    {post.imageUrl && <img src={post.imageUrl} className="w-16 h-16 object-cover rounded-lg border border-white/10" />}
+                                    <div>
+                                        <div className="text-xs text-orange-500 font-bold mb-1">{post.date}</div>
+                                        <h4 className="font-bold text-white text-lg leading-tight">{post.title}</h4>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2 w-full md:w-auto">
+                                    <button onClick={() => startEdit(post)} className="flex-1 md:flex-none px-4 py-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded font-bold text-sm transition">Edit</button>
+                                    <button onClick={() => handleDelete(post.id)} className="flex-1 md:flex-none px-4 py-2 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded font-bold text-sm transition">Delete</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [activeTab, setActiveTab] = useState('settings');
+
+            useEffect(() => {
+                const unsub = auth.onAuthStateChanged(u => {
+                    setUser(u);
+                    setLoading(false);
+                });
+                return () => unsub();
+            }, []);
+
+            if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading Admin...</div>;
+            if (!user) return <Login />;
+
+            return (
+                <div className="max-w-4xl mx-auto p-4 md:p-8 pb-20">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-black/30 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
+                        <h1 className="text-2xl font-black italic text-white">MetsSky <span className="text-blue-500">Admin</span></h1>
+                        <div className="flex items-center gap-4">
+                            <div className="text-xs text-slate-400 hidden md:block">{user.email}</div>
+                            <button onClick={() => auth.signOut()} className="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-600 hover:text-white rounded-lg text-xs font-bold transition flex items-center gap-2">
+                                <Icons.LogOut /> Sign Out
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex gap-2 mb-8 bg-black/20 p-1 rounded-xl overflow-x-auto">
+                        <button onClick={() => setActiveTab('settings')} className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm transition whitespace-nowrap ${activeTab === 'settings' ? 'bg-orange-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                            Home Settings
+                        </button>
+                        <button onClick={() => setActiveTab('blog')} className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm transition whitespace-nowrap ${activeTab === 'blog' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                            Blog Manager
+                        </button>
+                        <button onClick={() => setActiveTab('media')} className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm transition whitespace-nowrap ${activeTab === 'media' ? 'bg-yellow-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                            Media Manager
                         </button>
                     </div>
-                    {showComments && <CommentsSection postId={rant.id} currentUser={currentUser} />}
-                </div>
-            );
-        };
 
-        const ScheduleCard = ({ game }) => {
-            const isWin = game.result && (game.result.includes('W') || (game.score && parseInt(game.score.split('-')[0]) > parseInt(game.score.split('-')[1])));
-            const isLoss = game.result && game.result.includes('L');
-            const searchUrl = `https://www.youtube.com/results?search_query=New+York+Mets+vs+${game.opponent}+${game.date}+highlights`;
-            
-            return (
-                <a href={searchUrl} target="_blank" className="bg-slate-900/50 p-4 rounded-2xl border border-white/10 flex items-center justify-between hover:bg-white/5 hover:border-blue-500/50 transition-all group cursor-pointer">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 text-center">
-                            <div className="text-[10px] text-slate-500 font-bold uppercase">{game.date ? new Date(game.date).toLocaleDateString(undefined, {month:'short'}) : ''}</div>
-                            <div className="text-xl font-black text-white">{game.date ? new Date(game.date).getDate() : ''}</div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{game.homeAway === 'Home' ? 'vs' : '@'}</div>
-                            <div className="text-lg font-black text-white group-hover:text-blue-400 transition-colors">{game.opponent}</div>
-                            <div className="text-xs text-slate-400">{game.time || 'TBD'}</div>
-                        </div>
-                    </div>
-                    <div className={`px-4 py-2 rounded-xl font-black text-sm flex items-center gap-2 ${isWin ? 'bg-green-500/20 text-green-400' : isLoss ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-400'}`}>
-                        {game.score || (game.result || 'Upcoming')} <Icons.Play className="w-3 h-3 opacity-50 group-hover:opacity-100"/>
-                    </div>
-                </a>
-            );
-        };
-
-        const AuthGate = ({ onGoogle, onEmail, onSignUp, error }) => {
-            const [email, setEmail] = useState(''); const [pass, setPass] = useState(''); const [username, setUsername] = useState(''); const [isRegister, setIsRegister] = useState(false);
-            const handleSubmit = (e) => { e.preventDefault(); isRegister ? onSignUp(email, pass, username) : onEmail(email, pass); };
-            return ( <div className="glass-panel p-8 rounded-3xl border border-orange-500/30 text-center max-w-md mx-auto animate-fade-in my-12"> <div className="flex justify-center mb-6"> <div className="bg-gradient-to-br from-orange-500 to-red-600 p-4 rounded-full shadow-lg shadow-orange-500/30"><Icons.Lock className="w-8 h-8 text-white"/></div> </div> <h3 className="text-2xl font-black text-white mb-2">MetsSky Access</h3> <p className="text-slate-400 text-sm mb-6">Sign in to write blogs and post rants.</p> {error && <div className="bg-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-4 border border-red-500/30">{error}</div>} <form onSubmit={handleSubmit} className="space-y-4 text-left"> {isRegister && (<div className="animate-fade-in"><label className="text-xs uppercase font-bold text-orange-400 ml-1">Display Name (Seen by others)</label><div className="relative"><Icons.User className="w-5 h-5 absolute left-3 top-3 text-slate-500"/><input type="text" required value={username} onChange={e=>setUsername(e.target.value)} className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 pl-10 pr-3 text-white focus:outline-none focus:border-orange-500" placeholder="e.g. PolarBearFan20"/></div></div>)} <div><label className="text-xs uppercase font-bold text-slate-500 ml-1">Email</label><div className="relative"><Icons.Mail className="w-5 h-5 absolute left-3 top-3 text-slate-500"/><input type="email" required value={email} onChange={e=>setEmail(e.target.value)} className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 pl-10 pr-3 text-white focus:outline-none focus:border-orange-500" placeholder="you@example.com"/></div></div> <div><label className="text-xs uppercase font-bold text-slate-500 ml-1">Password</label><div className="relative"><Icons.Lock className="w-5 h-5 absolute left-3 top-3 text-slate-500"/><input type="password" required value={pass} onChange={e=>setPass(e.target.value)} className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 pl-10 pr-3 text-white focus:outline-none focus:border-orange-500" placeholder="••••••••"/></div></div> <button type="submit" className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-orange-600/20">{isRegister ? 'Create Account' : 'Sign In with Email'}</button> </form> <div className="flex items-center gap-4 my-6"><div className="h-px bg-white/10 flex-1"></div><span className="text-xs text-slate-500 font-bold">OR</span><div className="h-px bg-white/10 flex-1"></div></div> <button onClick={onGoogle} className="w-full bg-white text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-200 transition-colors"><svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Sign in with Google</button> <div className="mt-6 text-sm"><button onClick={() => setIsRegister(!isRegister)} className="text-blue-400 hover:text-white font-bold transition-colors">{isRegister ? 'Already have an account? Sign In' : 'Need an account? Register'}</button></div> </div> );
-        };
-
-        const ChatBox = () => {
-            const [isOpen, setIsOpen] = useState(false); const [username, setUsername] = useState(localStorage.getItem('mets_chat_username') || ''); const [messages, setMessages] = useState([]); const [inputText, setInputText] = useState(''); const [tempName, setTempName] = useState(''); const scrollRef = useRef(null);
-            useEffect(() => { const q = db.collection('mets_chat').orderBy('createdAt', 'asc').limitToLast(50); const unsubscribe = q.onSnapshot(snapshot => { setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); }); return () => unsubscribe(); }, []);
-            useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [messages, isOpen]);
-            const handleLogin = (e) => { e.preventDefault(); if (!tempName.trim()) return; setUsername(tempName); localStorage.setItem('mets_chat_username', tempName); };
-            const handleSend = async (e) => { e.preventDefault(); if (!inputText.trim()) return; await db.collection('mets_chat').add({ text: inputText, sender: username, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); setInputText(''); };
-            if (!isOpen) return ( <button onClick={() => setIsOpen(true)} className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-full shadow-2xl z-50 border-2 border-orange-500 transition-all hover:scale-110"><Icons.MessageSquare className="w-8 h-8" /></button> );
-            return ( <div className="fixed bottom-0 right-0 w-full md:w-96 md:bottom-6 md:right-6 bg-slate-900/95 backdrop-blur-xl border-t md:border border-white/10 md:rounded-2xl rounded-t-2xl shadow-2xl z-50 flex flex-col overflow-hidden chat-anim h-[65vh] md:h-[500px]" style={{maxHeight: '100dvh'}}> <div className="bg-blue-600/20 p-4 flex justify-between items-center border-b border-white/10 cursor-pointer" onClick={() => setIsOpen(false)}> <div className="flex items-center gap-2"><span className="text-xl">⚾</span><span className="font-black text-white">Bullpen Chat</span></div> <div className="flex gap-2"><button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}><Icons.Minimize2 className="w-4 h-4 text-slate-300 hover:text-white"/></button><button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}><Icons.X className="w-4 h-4 text-slate-300 hover:text-white"/></button></div> </div> {!username ? ( <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4"> <div className="text-5xl">🏟️</div> <h3 className="text-white font-bold">Enter the Lobby</h3> <p className="text-slate-400 text-sm">Pick a name to start chatting with the squad.</p> <form onSubmit={handleLogin} className="w-full space-y-2"><input type="text" placeholder="Your Name..." className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-white focus:border-orange-500 outline-none text-center" value={tempName} onChange={e => setTempName(e.target.value)}/><button type="submit" className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 rounded-xl">Join Chat</button></form> </div> ) : ( <> <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar" ref={scrollRef}> {messages.map(msg => ( <div key={msg.id} className={`flex flex-col ${msg.sender === username ? 'items-end' : 'items-start'}`}> <div className="text-[10px] text-slate-500 mb-1 px-1 font-bold">{msg.sender}</div> <div className={`px-3 py-2 rounded-xl text-sm max-w-[85%] break-words ${msg.sender === username ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none'}`}>{msg.text}</div> </div> ))} </div> <form onSubmit={handleSend} className="p-3 bg-black/20 border-t border-white/5 flex gap-2"><input type="text" placeholder="Talk smack..." className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-blue-500 text-sm" value={inputText} onChange={e => setInputText(e.target.value)}/><button type="submit" className="bg-orange-600 hover:bg-orange-500 text-white p-2 rounded-xl"><Icons.Send className="w-4 h-4"/></button></form> </> )} </div> );
-        };
-
-        const CountdownTicket = () => {
-            const [data, setData] = useState({ title: 'Opening Day', date: '2026-03-28' });
-            useEffect(() => { db.collection('mets_settings').doc('countdown').onSnapshot(doc => { if (doc.exists) setData(doc.data()); }); }, []);
-            if (!data || !data.date) return null;
-            const today = new Date(); today.setHours(0,0,0,0); const target = new Date(data.date); if (isNaN(target.getTime())) return null; const diffTime = target - today; const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); const displayDays = daysLeft < 0 ? 0 : daysLeft;
-            return ( <div className="glass-panel p-6 rounded-3xl border-l-8 border-orange-500 relative group flex flex-col md:flex-row items-center justify-between gap-6 animate-fade-in"> <div className="flex items-center gap-6 w-full md:w-auto"> <div className="bg-black/30 p-4 rounded-2xl border border-white/10 text-center min-w-[100px]"><div className="text-5xl font-black text-white tabular-nums tracking-tighter">{displayDays}</div><div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Days Left</div></div> <div><div className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Countdown To</div><h2 className="text-3xl md:text-4xl font-black text-white italic uppercase tracking-tight">{data.title}</h2><div className="text-sm text-slate-500 font-bold mt-1">{formatDate(data.date + 'T12:00:00')}</div></div> </div> <div className="hidden md:block"><Icons.Calendar className="w-16 h-16 text-white/5" /></div> </div> );
-        };
-
-        const RandomMetRibbon = ({ currentUser }) => {
-            const [data, setData] = useState({ name: 'Loading...', url: '' });
-            const [isEditing, setIsEditing] = useState(false);
-            const [tempName, setTempName] = useState('');
-            const [tempUrl, setTempUrl] = useState('');
-
-            useEffect(() => {
-                const unsubscribe = db.collection('mets_settings').doc('random_met').onSnapshot(doc => {
-                    if (doc.exists) {
-                        setData(doc.data());
-                    } else {
-                        setData({ name: 'Click to Set', url: '#' });
-                    }
-                });
-                return () => unsubscribe();
-            }, []);
-
-            const handleSave = async () => {
-                if(!tempName || !tempUrl) return;
-                try {
-                    await db.collection('mets_settings').doc('random_met').set({
-                        name: tempName,
-                        url: tempUrl
-                    });
-                    setIsEditing(false);
-                } catch(e) { alert(e.message); }
-            };
-
-            const enableEdit = () => {
-                setTempName(data.name);
-                setTempUrl(data.url);
-                setIsEditing(true);
-            };
-
-            return (
-                <div className="glass-panel p-4 rounded-2xl border border-blue-500/30 flex items-center justify-between gap-4 animate-fade-in bg-gradient-to-r from-blue-900/40 to-slate-900/40">
-                    <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                        <div className="text-xs font-bold text-orange-500 uppercase tracking-widest whitespace-nowrap">
-                            Today's Random Met is:
-                        </div>
-                        
-                        {isEditing ? (
-                            <div className="flex flex-col md:flex-row gap-2 w-full">
-                                <input 
-                                    type="text" 
-                                    placeholder="Player Name" 
-                                    value={tempName}
-                                    onChange={(e) => setTempName(e.target.value)}
-                                    className="bg-slate-900 border border-white/20 rounded px-2 py-1 text-white text-sm focus:border-orange-500 outline-none"
-                                />
-                                <input 
-                                    type="text" 
-                                    placeholder="Bluesky/Post URL" 
-                                    value={tempUrl}
-                                    onChange={(e) => setTempUrl(e.target.value)}
-                                    className="bg-slate-900 border border-white/20 rounded px-2 py-1 text-white text-sm focus:border-orange-500 outline-none flex-1"
-                                />
-                            </div>
-                        ) : (
-                            <div className="flex flex-col md:flex-row md:items-center gap-3">
-                                <span className="text-xl md:text-2xl font-black text-white italic truncate">
-                                    {data.name}
-                                </span>
-                                {data.url && (
-                                    <a href={data.url} target="_blank" className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-lg hover:scale-105">
-                                        Join Conversation Here <Icons.MessageSquare className="w-3 h-3"/>
-                                    </a>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {currentUser && (
-                        <div className="shrink-0">
-                            {isEditing ? (
-                                <div className="flex gap-2">
-                                    <button onClick={handleSave} className="bg-green-600 hover:bg-green-500 text-white p-2 rounded-lg text-xs font-bold"><Icons.Activity className="w-4 h-4" /></button>
-                                    <button onClick={() => setIsEditing(false)} className="bg-slate-700 hover:bg-slate-600 text-white p-2 rounded-lg text-xs font-bold"><Icons.X className="w-4 h-4" /></button>
-                                </div>
-                            ) : (
-                                <button onClick={enableEdit} className="bg-slate-800 hover:bg-white/10 text-slate-400 hover:text-white p-2 rounded-lg transition-colors">
-                                    <Icons.Edit2 className="w-4 h-4" />
-                                </button>
-                            )}
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const MediaBoard = ({ channels, currentUser, onAdd, onDelete }) => {
-            const [isFormOpen, setIsFormOpen] = useState(false);
-            const [newCh, setNewCh] = useState({ name: '', url: '' });
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                if(!newCh.name || !newCh.url) return;
-                onAdd(newCh);
-                setNewCh({ name: '', url: '' });
-                setIsFormOpen(false);
-            };
-
-            return (
-                <div className="space-y-8 animate-fade-in">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-black text-white flex items-center gap-2"><Icons.Tv className="w-6 h-6 text-yellow-500"/> Media Directory</h2>
-                        {currentUser && (
-                            <button onClick={() => setIsFormOpen(!isFormOpen)} className="bg-yellow-600 hover:bg-yellow-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center gap-2">
-                                {isFormOpen ? <Icons.X className="w-4 h-4"/> : <Icons.Link className="w-4 h-4"/>} {isFormOpen ? 'Cancel' : 'Add Link'}
-                            </button>
-                        )}
-                    </div>
-
-                    {isFormOpen && currentUser && (
-                        <div className="glass-panel p-6 rounded-3xl border border-yellow-500/30 animate-fade-in">
-                            <h4 className="text-lg font-bold text-white mb-4">Add New Media Link</h4>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-500">Link Title</label>
-                                    <input type="text" placeholder="e.g. SNY YouTube" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-yellow-500" value={newCh.name} onChange={e => setNewCh({...newCh, name: e.target.value})} required />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-500">URL</label>
-                                    <input type="url" placeholder="https://..." className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-yellow-500" value={newCh.url} onChange={e => setNewCh({...newCh, url: e.target.value})} required />
-                                </div>
-                                <div className="flex justify-end">
-                                    <button type="submit" className="bg-yellow-600 hover:bg-yellow-500 text-white font-bold px-6 py-2 rounded-xl shadow-lg">Save Link</button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(channels || []).map(channel => (
-                            <div key={channel.id} className="glass-panel p-4 rounded-2xl border border-white/10 flex justify-between items-center group hover:border-yellow-500/30 transition-all">
-                                <a href={channel.url} target="_blank" className="flex items-center gap-4 overflow-hidden flex-1 min-w-0">
-                                    <div className="bg-slate-800 p-3 rounded-xl text-yellow-500 flex-shrink-0 group-hover:scale-110 transition-transform"><Icons.Play className="w-5 h-5"/></div>
-                                    <div className="min-w-0">
-                                        <div className="text-white font-bold truncate group-hover:text-yellow-400 transition-colors text-base">{channel.name}</div>
-                                        <div className="text-xs text-slate-500 truncate">{channel.url}</div>
-                                    </div>
-                                </a>
-                                {currentUser && (
-                                    <button onClick={() => onDelete(channel.id)} className="ml-3 text-slate-600 hover:text-red-500 p-2 transition-colors"><Icons.Trash2 className="w-4 h-4"/></button>
-                                )}
-                            </div>
-                        ))}
-                        {(!channels || channels.length === 0) && <div className="col-span-full text-center text-slate-500 py-12 italic">No media links added yet.</div>}
+                    {/* Content */}
+                    <div className="animate-fade-in">
+                        {activeTab === 'settings' && <HomepageSettings />}
+                        {activeTab === 'blog' && <BlogManager user={user} />}
+                        {activeTab === 'media' && <MediaManager />}
                     </div>
                 </div>
             );
         };
-
-        const BlogBoard = ({ posts, viewId, currentUser, onAdd, onUpdate, onDelete, onGoogle, onEmail, onSignUp, authError }) => {
-            const [newPost, setNewPost] = useState({ title: '', content: '', imageUrl: '', date: new Date().toISOString().split('T')[0] }); 
-            const [imageFile, setImageFile] = useState(null); 
-            const [isUploading, setIsUploading] = useState(false); 
-            const [isFormOpen, setIsFormOpen] = useState(false);
-            const [isLoginOpen, setIsLoginOpen] = useState(false); 
-            const [editingId, setEditingId] = useState(null); // Track which ID is being edited
-            
-            const activePost = viewId ? posts.find(p => p.id === viewId) : null;
-            const formRef = useRef(null);
-
-            useEffect(() => {
-                if (activePost) {
-                    document.title = `${activePost.title} | MetsSky`;
-                } else {
-                    document.title = "MetsSky | The Dynasty";
-                }
-                return () => { document.title = "MetsSky | The Dynasty"; }
-            }, [activePost]);
-
-            // --- PREPARE EDIT MODE ---
-            const handleEditClick = (post) => {
-                setEditingId(post.id);
-                setNewPost({
-                    title: post.title,
-                    content: post.content,
-                    imageUrl: post.imageUrl || '',
-                    date: post.date // Pre-fill the date
-                });
-                setIsFormOpen(true);
-                // Scroll to top of form
-                setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-            };
-
-            const handleCancelEdit = () => {
-                setEditingId(null);
-                setNewPost({ title: '', content: '', imageUrl: '', date: new Date().toISOString().split('T')[0] });
-                setIsFormOpen(false);
-            };
-
-            const handleSubmit = async (e) => { 
-                e.preventDefault(); 
-                setIsUploading(true);
-                
-                try {
-                    let finalImageUrl = newPost.imageUrl;
-                    
-                    // If a new file was selected, upload it. Otherwise keep the old URL.
-                    if (imageFile) {
-                        const storageRef = storage.ref(`blog_images/${Date.now()}_${imageFile.name}`);
-                        await storageRef.put(imageFile);
-                        finalImageUrl = await storageRef.getDownloadURL();
-                    }
-
-                    const postData = { ...newPost, imageUrl: finalImageUrl };
-
-                    if (editingId) {
-                        // UPDATE EXISTING
-                        await onUpdate(editingId, postData);
-                        setEditingId(null); // Exit edit mode
-                    } else {
-                        // CREATE NEW
-                        await onAdd(postData);
-                    }
-                    
-                    // Reset form
-                    setNewPost({ title: '', content: '', imageUrl: '', date: new Date().toISOString().split('T')[0] }); 
-                    setImageFile(null);
-                    setIsFormOpen(false); 
-                } catch (error) {
-                    alert("Error saving blog: " + error.message);
-                } finally {
-                    setIsUploading(false);
-                }
-            };
-
-            const handleShare = async () => {
-                const shareText = `${activePost.title}\n\nRead more: ${window.location.href}`;
-                if (navigator.share) {
-                    try { 
-                        await navigator.share({ 
-                            title: activePost.title,
-                            text: shareText,
-                            url: window.location.href
-                        }); 
-                    } catch (err) {}
-                } else {
-                    navigator.clipboard.writeText(shareText);
-                    alert('Headline & Link copied!');
-                }
-            };
-
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const author = activePost ? (activePost.authorName || 'Contributor') : '';
-            const textContent = activePost ? `${activePost.title}\nBy ${author}\n\nRead here: ${window.location.href}\n\n#MetsSky` : '';
-            const baseUrl = isMobile ? 'bluesky://' : 'https://bsky.app/';
-            const bskyUrl = `${baseUrl}intent/compose?text=${encodeURIComponent(textContent)}`;
-
-            // --- SINGLE POST VIEW ---
-            if (viewId) {
-                if (!activePost) return <div className="text-center text-slate-500 py-20 animate-pulse">Loading Post or Post Not Found...</div>;
-                return (
-                    <div className="animate-fade-in pb-10">
-                        <button onClick={() => window.location.hash = 'blog'} className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 font-bold text-sm transition-colors"><Icons.ArrowDownCircle className="w-5 h-5 rotate-90" /> Back to Blog</button>
-                        <div className="glass-panel rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
-                            {activePost.imageUrl && (
-                                <div className="h-64 md:h-96 w-full overflow-hidden relative"><img src={activePost.imageUrl} className="w-full h-full object-cover" alt="Blog Header" /><div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div></div>
-                            )}
-                            <div className="p-6 md:p-10 relative">
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="text-xs font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2"><Icons.Calendar className="w-3 h-3"/> {formatDate(activePost.date)}</div>
-                                    <div className="flex gap-2">
-                                        <a href={bskyUrl} target={isMobile ? undefined : "_blank"} rel="noopener noreferrer" className="flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shadow-lg shadow-sky-500/20">
-                                            <Icons.Bluesky className="w-4 h-4"/> Post to Bluesky
-                                        </a>
-                                        <button onClick={handleShare} className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors">
-                                            <Icons.Link className="w-4 h-4"/> Copy
-                                        </button>
-                                        
-                                        {/* EDIT AND DELETE BUTTONS FOR SINGLE VIEW */}
-                                        {currentUser && (
-                                            <>
-                                                <button onClick={() => { window.location.hash = 'blog'; handleEditClick(activePost); }} className="flex items-center gap-2 bg-slate-800 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors border border-white/10">
-                                                    <Icons.Edit2 className="w-4 h-4"/> Edit
-                                                </button>
-                                                <button onClick={() => { onDelete(activePost.id); window.location.hash = 'blog'; }} className="flex items-center gap-2 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors border border-red-500/30">
-                                                    <Icons.Trash2 className="w-4 h-4"/> Delete
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                                <h1 className="text-3xl md:text-5xl font-black text-white mb-8 leading-tight">{activePost.title || 'Untitled'}</h1>
-                                <div className="text-slate-300 leading-relaxed whitespace-pre-wrap font-serif text-lg md:text-xl">{activePost.content || ''}</div>
-                                <div className="mt-10 border-t border-white/5 pt-6 text-xs font-bold text-slate-500 uppercase">Written by {activePost.authorName || 'Contributor'}</div>
-                                <CommentsSection postId={activePost.id} currentUser={currentUser} />
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            // --- LIST VIEW ---
-            return ( 
-                <div className="space-y-8 animate-fade-in" ref={formRef}> 
-                    <div className="flex justify-between items-center"> 
-                        <h3 className="text-2xl font-black text-white italic">MetsSky <span className="text-purple-400">Blog</span></h3> 
-                        {currentUser ? ( 
-                            <button onClick={isFormOpen ? handleCancelEdit : () => setIsFormOpen(true)} className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2"> 
-                                {isFormOpen ? <Icons.X className="w-4 h-4"/> : <Icons.Edit2 className="w-4 h-4"/>} {isFormOpen ? 'Cancel / Close' : 'Write Post'} 
-                            </button> 
-                        ) : (
-                            <button onClick={() => setIsLoginOpen(!isLoginOpen)} className="bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-600/20 text-xs font-bold flex items-center gap-2 transition-colors px-6 py-2 rounded-xl">
-                                <Icons.Lock className="w-4 h-4"/> Contributor Login
-                            </button>
-                        )} 
-                    </div> 
-
-                    {isLoginOpen && !currentUser && (
-                        <div className="mb-8">
-                            <AuthGate onGoogle={onGoogle} onEmail={onEmail} onSignUp={onSignUp} error={authError} />
-                        </div>
-                    )}
-
-                    {isFormOpen && currentUser && ( 
-                        <div className="glass-panel p-6 rounded-3xl border border-purple-500/30 mb-8 animate-fade-in"> 
-                            <h4 className="text-lg font-bold text-white mb-4">{editingId ? 'Edit Post' : 'New Blog Post'}</h4> 
-                            <form onSubmit={handleSubmit} className="space-y-4"> 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-                                    <div className="space-y-1"> 
-                                        <label className="text-[10px] uppercase font-bold text-slate-500">Headline</label> 
-                                        <input type="text" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 font-bold" value={newPost.title} onChange={e => setNewPost({...newPost, title: e.target.value})} required /> 
-                                    </div> 
-                                    <div className="space-y-1"> 
-                                        <label className="text-[10px] uppercase font-bold text-slate-500">Date</label> 
-                                        {/* Date Input - Will be pre-filled if editing */}
-                                        <input type="date" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500" value={newPost.date} onChange={e => setNewPost({...newPost, date: e.target.value})} required /> 
-                                    </div> 
-                                </div> 
-                                <div className="space-y-1"> 
-                                    <label className="text-[10px] uppercase font-bold text-slate-500">Header Image {editingId && '(Leave empty to keep current image)'}</label> 
-                                    <div className="relative">
-                                        <input type="file" accept="image/*" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500" onChange={(e) => setImageFile(e.target.files[0])} />
-                                    </div>
-                                </div> 
-                                <div className="space-y-1"> 
-                                    <label className="text-[10px] uppercase font-bold text-slate-500">Content</label> 
-                                    <textarea className="w-full h-48 bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500" placeholder="Write your article here..." value={newPost.content} onChange={e => setNewPost({...newPost, content: e.target.value})} required></textarea> 
-                                </div> 
-                                <div className="flex justify-end gap-3"> 
-                                    {editingId && <button type="button" onClick={handleCancelEdit} className="text-slate-400 hover:text-white font-bold px-4 py-3">Cancel</button>}
-                                    <button type="submit" disabled={isUploading} className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-8 py-3 rounded-xl shadow-lg flex items-center gap-2">
-                                        {isUploading ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> Uploading...</> : (editingId ? 'Update Post' : 'Publish Post')}
-                                    </button> 
-                                </div> 
-                            </form> 
-                        </div> 
-                    )} 
-                    <div className="grid grid-cols-1 gap-4"> 
-                        {(posts || []).map(post => ( 
-                            <div key={post.id} onClick={() => window.location.hash = `blog/${post.id}`} className="glass-panel p-6 rounded-2xl border border-white/5 hover:border-purple-500/50 hover:bg-white/5 transition-all cursor-pointer group flex gap-6 items-center relative"> 
-                                {post.imageUrl ? (<div className="w-24 h-24 md:w-32 md:h-32 shrink-0 rounded-xl overflow-hidden bg-slate-800"><img src={post.imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /></div>) : (<div className="w-24 h-24 shrink-0 rounded-xl bg-slate-800 flex items-center justify-center text-purple-900"><Icons.BookOpen className="w-8 h-8 opacity-50" /></div>)}
-                                <div className="flex-1 min-w-0">
-                                    <div className="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2"> {formatDate(post.date)} • {post.authorName || 'Staff'}</div> 
-                                    <h2 className="text-xl md:text-2xl font-black text-white leading-tight group-hover:text-purple-400 transition-colors line-clamp-2 mb-2">{post.title || 'Untitled'}</h2> 
-                                    <div className="text-slate-400 text-sm line-clamp-2 leading-relaxed">{post.content}</div>
-                                    <div className="mt-3 text-xs font-bold text-slate-500 flex items-center gap-1 group-hover:text-white transition-colors">Read Full Article <Icons.ArrowDownCircle className="w-3 h-3 -rotate-90"/></div>
-                                </div>
-                                {/* LIST VIEW ACTIONS */}
-                                {currentUser && (
-                                    <div className="absolute top-2 right-2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); handleEditClick(post); }} 
-                                            className="bg-black/50 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
-                                            title="Edit Post"
-                                        >
-                                            <Icons.Edit2 className="w-4 h-4"/>
-                                        </button>
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); onDelete(post.id); }} 
-                                            className="bg-black/50 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
-                                            title="Delete Post"
-                                        >
-                                            <Icons.Trash2 className="w-4 h-4"/>
-                                        </button>
-                                    </div>
-                                )}
-                            </div> 
-                        ))} 
-                        {(!posts || posts.length === 0) && <div className="text-center text-slate-500 py-12 italic">No blog posts yet.</div>} 
-                    </div> 
-                </div> 
-            );
-        };
-
-        const NewsBoard = ({ news }) => { const [filterMonth, setFilterMonth] = useState('All'); const getMonthName = (d) => { if(!d) return ''; try { return new Date(d).toLocaleString('default', { month: 'long' }); } catch(e){return '';} }; const filtered = (news||[]).filter(i => { if(!i.date) return false; return filterMonth === 'All' || getMonthName(i.date) === filterMonth; }); const months = ['All', 'November', 'December', 'January', 'February', 'March', 'April']; return ( <div className="space-y-8 animate-fade-in"> <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2"> {months.map(m => ( <button key={m} onClick={() => setFilterMonth(m)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border border-white/5 ${filterMonth === m ? 'bg-blue-600 text-white' : 'bg-slate-900/50 text-slate-400 hover:text-white hover:bg-white/10'}`}>{m}</button> ))} </div> <div className="grid gap-3"> {filtered.map(n => ( <div key={n.id} className="glass-panel p-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-all flex items-center gap-4"> <div className="p-3 rounded-xl border border-slate-500 text-slate-400"><Icons.FileText className="w-4 h-4"/></div> <div className="min-w-0 flex-1"> <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5"> {formatDate(n.date)} • {n.source || 'News'} </div> <a href={n.url} target="_blank" className="text-white font-bold text-base md:text-lg hover:text-blue-400 transition-colors block break-words">{n.title}</a> </div> </div> ))} </div> </div> ); };
-
-        // --- UPDATED ROSTER COMPONENT ---
-        const RosterBoard = ({ mlbRoster, players, rosterMode, setRosterMode, currentUser, onAddVibe, onDeleteVibe }) => {
-             const [isVibeFormOpen, setIsVibeFormOpen] = useState(false);
-             const [newVibe, setNewVibe] = useState({ name: '', vibe: '' });
-
-             const handleVibeSubmit = (e) => {
-                 e.preventDefault();
-                 onAddVibe(newVibe);
-                 setNewVibe({ name: '', vibe: '' });
-                 setIsVibeFormOpen(false);
-             };
-
-             const getPositionGroup = (code) => {
-                 const c = parseInt(code);
-                 if (c === 1) return 'Pitchers';
-                 if (c === 2) return 'Catchers';
-                 if (c >= 3 && c <= 6) return 'Infielders';
-                 if (c >= 7 && c <= 9) return 'Outfielders';
-                 if (c === 10) return 'Designated Hitters';
-                 return 'Pitchers'; 
-             };
-
-             const getStatusColor = (status) => {
-                 const s = (status || '').toLowerCase();
-                 if (s.includes('active')) return 'text-green-400 bg-green-900/30 border-green-500/30';
-                 if (s.includes('injured') || s.includes('il')) return 'text-red-400 bg-red-900/30 border-red-500/30';
-                 if (s.includes('minors') || s.includes('optioned')) return 'text-yellow-400 bg-yellow-900/30 border-yellow-500/30';
-                 return 'text-slate-400 bg-slate-800';
-             };
-
-             return ( 
-                 <div className="space-y-8 animate-fade-in"> 
-                    
-                    {/* Mode Toggles */}
-                    <div className="glass-panel p-2 rounded-2xl mb-4 w-full flex flex-col md:flex-row gap-2"> 
-                        <button onClick={() => setRosterMode('40man')} className={`flex-1 py-3 md:py-2 rounded-xl text-sm font-bold transition-all ${rosterMode === '40man' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-white bg-slate-900/50'}`}>
-                            <div className="flex items-center justify-center gap-2"><Icons.Users className="w-4 h-4"/> 40-Man Roster</div>
-                        </button> 
-                        <button onClick={() => setRosterMode('vibes')} className={`flex-1 py-3 md:py-2 rounded-xl text-sm font-bold transition-all ${rosterMode === 'vibes' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:text-white bg-slate-900/50'}`}>
-                            <div className="flex items-center justify-center gap-2"><Icons.ClipboardList className="w-4 h-4"/> Vibe Check</div>
-                        </button> 
-                    </div> 
-
-                    {/* 40-MAN VIEW */}
-                    {rosterMode === '40man' && (
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-black text-white border-l-4 border-blue-500 pl-3">Live Roster</h3>
-                                <div className="text-[10px] font-bold uppercase text-slate-500 bg-slate-900 px-2 py-1 rounded border border-white/10">Official MLB Data</div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {['Pitchers', 'Catchers', 'Infielders', 'Outfielders', 'Designated Hitters'].map(group => {
-                                    const groupPlayers = mlbRoster.filter(p => getPositionGroup(p.position.code) === group);
-                                    if (groupPlayers.length === 0) return null;
-
-                                    return (
-                                        <div key={group} className="glass-panel rounded-3xl overflow-hidden flex flex-col h-fit">
-                                            <div className="bg-slate-800/80 p-3 flex justify-between items-center border-b border-white/5">
-                                                <span className="text-xs font-black text-slate-300 uppercase tracking-widest">{group}</span>
-                                                <span className="text-[10px] bg-white/10 px-1.5 rounded text-white font-bold">{groupPlayers.length}</span>
-                                            </div>
-                                            <div className="divide-y divide-white/5">
-                                                {groupPlayers.map(p => (
-                                                    <a href={`https://www.mlb.com/player/${p.person.id}`} target="_blank" key={p.person.id} className="flex items-center gap-3 p-3 hover:bg-white/5 transition-colors group cursor-pointer">
-                                                        <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center font-black text-slate-400 text-xs border border-white/10 group-hover:text-white group-hover:border-blue-500/50 transition-all">
-                                                            {p.jerseyNumber || '#'}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="font-bold text-white text-sm truncate group-hover:text-blue-400 transition-colors">{p.person.fullName}</div>
-                                                            <div className="text-[10px] text-slate-500 uppercase">{p.position.name}</div>
-                                                        </div>
-                                                        <div className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${getStatusColor(p.status.description)}`}>
-                                                            {p.status.description === 'Active' ? 'Active' : (p.status.description.includes('Injured') ? 'IL' : 'Minors/Other')}
-                                                        </div>
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* VIBES VIEW */}
-                    {rosterMode === 'vibes' && ( 
-                        <div className="space-y-4">
-                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-black text-white border-l-4 border-orange-500 pl-3">Player Vibes</h3>
-                                {currentUser && (
-                                    <button onClick={() => setIsVibeFormOpen(!isVibeFormOpen)} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg flex items-center gap-2">
-                                        {isVibeFormOpen ? <Icons.X className="w-3 h-3"/> : <Icons.Edit2 className="w-3 h-3"/>} {isVibeFormOpen ? 'Cancel' : 'Add Vibe'}
-                                    </button>
-                                )}
-                            </div>
-
-                            {isVibeFormOpen && currentUser && (
-                                <div className="glass-panel p-6 rounded-2xl border border-orange-500/30 mb-6 animate-fade-in">
-                                    <h4 className="text-sm font-bold text-white mb-3">Add Player Vibe</h4>
-                                    <form onSubmit={handleVibeSubmit} className="space-y-3">
-                                        <input type="text" placeholder="Player Name" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-orange-500" value={newVibe.name} onChange={e => setNewVibe({...newVibe, name: e.target.value})} required />
-                                        <input type="text" placeholder="The Vibe (e.g. 'Chill', 'Intense')" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-orange-500" value={newVibe.vibe} onChange={e => setNewVibe({...newVibe, vibe: e.target.value})} required />
-                                        <button type="submit" className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 rounded-xl">Save Vibe</button>
-                                    </form>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-                                {(players || []).map(player => (<PlayerCard key={player.id} player={player} onDelete={onDeleteVibe} currentUser={currentUser} />))} 
-                                {(!players || players.length === 0) && <div className="col-span-full text-center text-slate-500 py-10">No vibe checks recorded yet.</div>}
-                            </div> 
-                        </div>
-                    )} 
-                </div> 
-            );
-        };
-
-        const MovesBoard = ({ transactions }) => {
-            const getColor = (desc) => { const d = desc.toLowerCase(); if(d.includes('signed') || d.includes('claimed') || d.includes('recalled') || d.includes('selected')) return 'text-green-400 border-green-500/30 bg-green-500/10'; if(d.includes('outrighted') || d.includes('released') || d.includes('optioned') || d.includes('designated') || d.includes('lost')) return 'text-red-400 border-red-500/30 bg-red-500/10'; return 'text-blue-400 border-blue-500/30 bg-blue-500/10'; };
-            const getIcon = (desc) => { const d = desc.toLowerCase(); if(d.includes('signed') || d.includes('claimed')) return <Icons.ArrowUpCircle className="w-5 h-5"/>; if(d.includes('released') || d.includes('lost')) return <Icons.ArrowDownCircle className="w-5 h-5"/>; return <Icons.Activity className="w-5 h-5"/>; };
-            return ( <div className="space-y-6 animate-fade-in"> <div className="flex items-center gap-3 mb-6"> <div className="bg-green-600 p-2 rounded-lg"><Icons.RefreshCw className="w-6 h-6 text-white"/></div> <div> <h2 className="text-2xl font-black text-white">Transaction Wire</h2> <p className="text-xs text-slate-400">Official MLB Data Feed • Last 50 Moves</p> </div> </div> <div className="space-y-3"> {(transactions || []).map((t, i) => ( <div key={i} className="bg-slate-900/50 p-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-all flex gap-4 items-start"> <div className={`p-2 rounded-xl border ${getColor(t.description)}`}> {getIcon(t.description)} </div> <div className="flex-1"> <div className="flex items-center gap-2 mb-1"> <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{formatDate(t.date)}</span> {t.player && <span className="text-[10px] bg-slate-800 text-white px-2 py-0.5 rounded font-bold">{t.player}</span>} </div> <div className="text-sm text-white font-medium leading-snug">{t.description}</div> </div> </div> ))} {(!transactions || transactions.length === 0) && ( <div className="text-center py-12 text-slate-500 italic">Scanning league wire...</div> )} </div> </div> );
-        };
-
-        const LinksBoard = ({ links }) => { return ( <div className="space-y-8 animate-fade-in"> <div className="grid gap-3"> {(links || []).map(link => (<LinkCard key={link.id || Math.random()} link={link} />))} {(!links || links.length === 0) && <div className="text-center text-slate-500 py-10">No receipts saved yet.</div>} </div> </div> ); };
-
-        const RandomSeriesBoard = ({ entries, currentUser, onAdd, onDelete }) => {
-            const [isFormOpen, setIsFormOpen] = useState(false);
-            const [newItem, setNewItem] = useState({ player: '', date: new Date().toISOString().split('T')[0], url: '' });
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                if(!newItem.player || !newItem.url) return;
-                onAdd(newItem);
-                setNewItem({ player: '', date: new Date().toISOString().split('T')[0], url: '' });
-                setIsFormOpen(false);
-            };
-
-            return (
-                <div className="space-y-8 animate-fade-in">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-black text-white flex items-center gap-2">
-                            <Icons.Shuffle className="w-6 h-6 text-pink-500"/> Random Met Series
-                        </h2>
-                        {currentUser && (
-                            <button onClick={() => setIsFormOpen(!isFormOpen)} className="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-lg flex items-center gap-2">
-                                {isFormOpen ? <Icons.X className="w-4 h-4"/> : <Icons.Edit2 className="w-4 h-4"/>} {isFormOpen ? 'Cancel' : 'Add Entry'}
-                            </button>
-                        )}
-                    </div>
-
-                    {isFormOpen && currentUser && (
-                        <div className="glass-panel p-6 rounded-3xl border border-pink-500/30 animate-fade-in">
-                            <h4 className="text-lg font-bold text-white mb-4">Add Daily Random Met</h4>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-500">Player Name</label>
-                                        <input type="text" placeholder="e.g. Benny Agbayani" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500" value={newItem.player} onChange={e => setNewItem({...newItem, player: e.target.value})} required />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-500">Date</label>
-                                        <input type="date" className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500" value={newItem.date} onChange={e => setNewItem({...newItem, date: e.target.value})} required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-500">External Link</label>
-                                    <input type="url" placeholder="https://bluesky.app/..." className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-pink-500" value={newItem.url} onChange={e => setNewItem({...newItem, url: e.target.value})} required />
-                                </div>
-                                <div className="flex justify-end">
-                                    <button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-bold px-6 py-2 rounded-xl shadow-lg">Save Entry</button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {(entries || []).map(entry => (
-                            <div key={entry.id} className="relative group">
-                                <a href={entry.url} target="_blank" className="block glass-panel p-6 rounded-2xl border border-white/10 hover:border-pink-500/50 hover:bg-white/5 transition-all h-full flex flex-col justify-between">
-                                    <div className="mb-4">
-                                        <div className="text-[10px] font-bold text-pink-400 uppercase tracking-widest mb-1">{formatDate(entry.date)}</div>
-                                        <h3 className="text-xl font-black text-white leading-tight group-hover:text-pink-400 transition-colors">{entry.player}</h3>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 group-hover:text-white transition-colors">
-                                        View Post <Icons.Link className="w-3 h-3" />
-                                    </div>
-                                </a>
-                            </div>
-                        ))}
-                        {(!entries || entries.length === 0) && <div className="col-span-full text-center text-slate-500 py-12 italic">No Random Mets added yet.</div>}
-                    </div>
-                </div>
-            );
-        };
-
-        const HomeFloatingButton = () => (
-            <button onClick={() => window.location.hash = 'home'} className="fixed bottom-6 left-6 bg-slate-800/90 hover:bg-slate-700 text-white px-4 py-3 rounded-full shadow-2xl z-50 border border-white/20 transition-all hover:scale-110 backdrop-blur flex items-center gap-2 font-bold">
-                <Icons.Home className="w-5 h-5" /> <span className="hidden md:inline">Home</span>
-            </button>
-        );
-
-        const IOSInstallPrompt = () => {
-            const [show, setShow] = useState(false);
-            useEffect(() => {
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-                if (isIOS && !isStandalone) { setShow(true); }
-            }, []);
-            if (!show) return null;
-            return (
-                <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t-2 border-orange-500 p-6 z-[100] animate-fade-in shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-                    <div className="flex justify-between items-start gap-4 max-w-5xl mx-auto">
-                        <div className="flex-1">
-                            <h4 className="text-white font-black text-lg mb-1">Install MetsSky</h4>
-                            <p className="text-slate-300 text-sm leading-relaxed">For the best experience, add this app to your home screen.</p>
-                            <div className="flex items-center gap-2 mt-3 text-sm text-orange-400 font-bold">1. Tap <Icons.Share className="w-5 h-5 inline-block mx-1 text-blue-400" /> Share</div>
-                            <div className="flex items-center gap-2 mt-1 text-sm text-orange-400 font-bold">2. Scroll down & tap "Add to Home Screen" <div className="w-5 h-5 bg-slate-700 rounded text-xs flex items-center justify-center text-white">+</div></div>
-                        </div>
-                        <button onClick={() => setShow(false)} className="bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white p-2 rounded-full transition-colors"><Icons.X className="w-6 h-6" /></button>
-                    </div>
-                </div>
-            );
-        };
-
-        function App() {
-            const getRoute = () => {
-                const hash = window.location.hash.slice(1);
-                if (!hash) return { tab: 'home', id: null };
-                const parts = hash.split('/');
-                const validTabs = ['home', 'news', 'blog', 'media', 'schedule', 'roster', 'moves', 'rants', 'links', 'random'];
-                const tab = validTabs.includes(parts[0]) ? parts[0] : 'home';
-                return { tab, id: parts[1] || null };
-            };
-            const [route, setRoute] = useState(getRoute());
-            const activeTab = route.tab;
-            const viewId = route.id;
-
-            const [rosterMode, setRosterMode] = useState('40man'); 
-            const [scheduleMode, setScheduleMode] = useState('Regular'); 
-            const [currentUser, setCurrentUser] = useState(null); 
-            const [authError, setAuthError] = useState(null);
-            
-            // UI States
-            const [showHomeLogin, setShowHomeLogin] = useState(false);
-
-            // Data States
-            const [schedule2026, setSchedule2026] = useState([]); 
-            const [rants, setRants] = useState([]); 
-            const [players, setPlayers] = useState([]); // Custom "Vibes" players
-            const [links, setLinks] = useState([]); 
-            const [channels, setChannels] = useState([]); 
-            const [news, setNews] = useState([]); 
-            const [blogPosts, setBlogPosts] = useState([]);
-            const [apiTransactions, setApiTransactions] = useState([]);
-            const [randomMets, setRandomMets] = useState([]);
-            
-            // New Live Roster States
-            const [mlbRoster, setMlbRoster] = useState([]);
-            
-            const [isOnline, setIsOnline] = useState(false); 
-            const [loading, setLoading] = useState(true);
-            const [newRant, setNewRant] = useState({ topic: '', content: '', mood: 'Neutral' });
-
-            useEffect(() => {
-                const onHashChange = () => setRoute(getRoute());
-                window.addEventListener('hashchange', onHashChange);
-                return () => window.removeEventListener('hashchange', onHashChange);
-            }, []);
-
-            useEffect(() => {
-                const init = async () => {
-                    auth.onAuthStateChanged(user => setCurrentUser(user || null));
-                    const checkOnline = () => setIsOnline(navigator.onLine); window.addEventListener('online', checkOnline); window.addEventListener('offline', checkOnline); checkOnline();
-                    
-                    // Firebase Listeners
-                    db.collection('mets_schedule_2026').orderBy('date', 'asc').onSnapshot(s => setSchedule2026(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_rants').orderBy('createdAt', 'desc').onSnapshot(s => setRants(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_roster').orderBy('createdAt', 'desc').onSnapshot(s => setPlayers(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_links').orderBy('createdAt', 'desc').onSnapshot(s => setLinks(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_channels').orderBy('createdAt', 'desc').onSnapshot(s => setChannels(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_blog').orderBy('date', 'desc').onSnapshot(s => setBlogPosts(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-                    db.collection('mets_random_series').orderBy('date', 'desc').onSnapshot(s => setRandomMets(s.docs.map(d => ({ id: d.id, ...d.data() }))));
-
-                    // Fetch Live Roster Data (40 Man)
-                    try {
-                        const rosterRes = await fetch('https://statsapi.mlb.com/api/v1/teams/121/roster/40Man');
-                        const rosterData = await rosterRes.json();
-                        if (rosterData.roster) setMlbRoster(rosterData.roster);
-                    } catch (e) { console.error("Roster Fetch Error", e); }
-
-                    // Fetch Transactions
-                    try {
-                        const today = new Date(); const endDate = today.toISOString().split('T')[0];
-                        const lastMonth = new Date(); lastMonth.setMonth(lastMonth.getMonth() - 6); const startDate = lastMonth.toISOString().split('T')[0];
-                        const res = await fetch(`https://statsapi.mlb.com/api/v1/transactions?teamId=121&startDate=${startDate}&endDate=${endDate}`);
-                        const data = await res.json();
-                        if(data.transactions) { const sorted = data.transactions.sort((a,b) => new Date(b.date) - new Date(a.date)); setApiTransactions(sorted.slice(0, 50).map(t => ({ date: t.date, description: t.description, player: t.person ? t.person.fullName : null, type: t.typeCode }))); }
-                    } catch(e) { console.error("MLB API Error", e); }
-
-                    // News Feed
-                    db.collection('mets_news').orderBy('date', 'desc').onSnapshot(async (s) => {
-                        const manualNews = s.docs.map(d => ({ id: d.id, ...d.data(), source: 'Manual' }));
-                        try {
-                            const rssUrls = [ 
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://www.mlb.com/mets/feeds/news/rss.xml&t=${Date.now()}`,
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://metsmerizedonline.com/feed/&t=${Date.now()}`, 
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://risingapple.com/feed/&t=${Date.now()}`,
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://www.amazinavenue.com/rss/current&t=${Date.now()}`, 
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://nypost.com/sports/mets/feed/&t=${Date.now()}`,
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://almostametnewsletter.substack.com/feed&t=${Date.now()}`,
-                                `https://api.rss2json.com/v1/api.json?rss_url=https://www.kinerskorner.com/feed/&t=${Date.now()}`
-                            ];
-                            const responses = await Promise.all(rssUrls.map(url => fetch(url).then(res => res.json()).catch(e=>null)));
-                            let liveArticles = [];
-                            responses.forEach(feed => { if(feed && feed.status === 'ok' && feed.items) { liveArticles.push(...feed.items.map(i => ({ id: i.guid||i.link, title: i.title, url: i.link, date: i.pubDate || new Date().toISOString(), type: 'Live Feed', source: feed.feed.title }))); } });
-                            const combined = [...manualNews, ...liveArticles].sort((a, b) => new Date(b.date) - new Date(a.date));
-                            setNews(combined);
-                        } catch (err) { setNews(manualNews); }
-                    });
-                    setLoading(false);
-                };
-                init();
-            }, []);
-
-            const handleGoogleLogin = async () => { setAuthError(null); try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch (error) { setAuthError(error.message); } };
-            const handleEmailLogin = async (email, password) => { setAuthError(null); try { await auth.signInWithEmailAndPassword(email, password); } catch(error) { setAuthError(error.message); } };
-            const handleEmailSignUp = async (email, password, username) => { setAuthError(null); try { const u = await auth.createUserWithEmailAndPassword(email, password); if(username) await u.user.updateProfile({displayName: username}); setCurrentUser({...u.user}); } catch(error) { setAuthError(error.message); } };
-            const handleLogout = () => auth.signOut();
-            const addRant = async (e) => { e.preventDefault(); if (!currentUser) return; try{ await db.collection('mets_rants').add({ ...newRant, date: new Date().toLocaleDateString(), createdAt: firebase.firestore.FieldValue.serverTimestamp(), authorId: currentUser.uid, authorName: currentUser.displayName || currentUser.email.split('@')[0], authorPhoto: currentUser.photoURL }); setNewRant({ topic: '', content: '', mood: 'Neutral' }); }catch(e){alert("Error: "+e.message);} };
-            const deleteRant = (id) => { if(confirm("Delete this rant?")) db.collection('mets_rants').doc(id).delete().catch(e=>alert(e.message)); };
-            
-            // --- UPDATED ADD BLOG FUNCTION WITH ERROR HANDLING ---
-            const addBlogPost = async (data) => { 
-                if (!currentUser) throw new Error("You must be logged in to post.");
-                return await db.collection('mets_blog').add({ 
-                    ...data, 
-                    authorId: currentUser.uid, 
-                    authorName: currentUser.displayName || currentUser.email.split('@')[0], 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-                }); 
-            };
-            
-            // --- NEW FUNCTION TO UPDATE POSTS ---
-            const updateBlogPost = async (id, data) => {
-                if (!currentUser) throw new Error("You must be logged in to edit.");
-                // Only update the fields provided, don't overwrite authorId unless needed
-                return await db.collection('mets_blog').doc(id).update({
-                    ...data,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            };
-
-            const deleteBlogPost = (id) => { if(confirm("Delete?")) db.collection('mets_blog').doc(id).delete().catch(e=>alert("Delete failed: "+e.message)); };
-            const addChannel = async (channel) => { if (!currentUser) return; try{await db.collection('mets_channels').add({ ...channel, createdAt: firebase.firestore.FieldValue.serverTimestamp() });}catch(e){alert(e.message);} };
-            const deleteChannel = async (id) => { if (!currentUser) return; if(confirm("Delete this link?")) db.collection('mets_channels').doc(id).delete().catch(e=>alert(e.message)); };
-            
-            // New Vibe Handlers
-            const addVibe = async (vibe) => { if (!currentUser) return; try{await db.collection('mets_roster').add({ ...vibe, createdAt: firebase.firestore.FieldValue.serverTimestamp() });}catch(e){alert(e.message);} };
-            const deleteVibe = async (id) => { if (!currentUser) return; if(confirm("Delete this vibe?")) db.collection('mets_roster').doc(id).delete().catch(e=>alert(e.message)); };
-
-            // Random Series Handlers
-            const addRandomMet = async (item) => { if (!currentUser) return; try{await db.collection('mets_random_series').add({ ...item, createdAt: firebase.firestore.FieldValue.serverTimestamp() });}catch(e){alert(e.message);} };
-            const deleteRandomMet = async (id) => { if (!currentUser) return; if(confirm("Delete this entry?")) db.collection('mets_random_series').doc(id).delete().catch(e=>alert(e.message)); };
-
-            if (loading) return <div className="min-h-screen flex items-center justify-center text-orange-500 font-black text-2xl bg-slate-900">LOADING CITI FIELD...</div>;
-
-            return (
-                <div className="min-h-screen pb-10">
-                    <div className="glass-panel sticky top-0 z-50 border-b border-white/10 mb-8">
-                        <div className="max-w-5xl mx-auto px-4 md:px-6 h-auto md:h-24 py-4 md:py-0 flex flex-col md:flex-row justify-between items-center gap-4">
-                            <div className="flex items-center gap-4 group cursor-pointer self-start md:self-auto" onClick={() => window.location.hash = 'home'}>
-                                <div className="bg-gradient-to-br from-orange-500 to-red-600 p-2 md:p-3 rounded-2xl shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform"><span className="text-2xl md:text-3xl">⚾</span></div>
-                                <div><h1 className="text-2xl md:text-3xl font-black text-white tracking-tight italic">Mets<span className="text-blue-500">Sky</span></h1><p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">The New York Frame of Mind</p></div>
-                            </div>
-                            <div className="w-full md:w-auto flex gap-2 bg-black/20 p-1.5 rounded-xl border border-white/5 overflow-x-auto custom-scrollbar">
-                                {['home', 'news', 'blog', 'media', 'schedule', 'roster', 'moves', 'rants', 'links', 'random'].map(tab => (
-                                    <button key={tab} onClick={() => window.location.hash = tab} className={`px-3 md:px-5 py-2 md:py-2.5 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${activeTab === tab ? (tab === 'social' ? 'bg-sky-600' : tab === 'blog' ? 'bg-purple-600' : tab === 'random' ? 'bg-pink-600' : 'bg-blue-600') + ' text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-                                         {tab === 'random' ? 'Series' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                                    </button>
-                                ))}
-                                <div className="ml-4 flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-l border-slate-700 pl-4 whitespace-nowrap"><div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 pulse-dot' : 'bg-red-500'}`}></div>{isOnline ? "LIVE" : "OFFLINE"}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="max-w-5xl mx-auto px-6">
-                        {activeTab === 'home' && (
-                            <div className="animate-fade-in space-y-6">
-                                <CountdownTicket />
-                                
-                                {/* --- HOME SIGN IN --- */}
-                                <div className="flex justify-end">
-                                    {currentUser ? (
-                                        <div className="glass-panel px-4 py-2 rounded-xl flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-xs font-bold text-white">
-                                                {currentUser.displayName ? currentUser.displayName[0] : 'U'}
-                                            </div>
-                                            <div className="text-sm font-bold text-white">Welcome back, {currentUser.displayName || 'Fan'}</div>
-                                            <button onClick={handleLogout} className="text-xs text-slate-400 hover:text-red-400 ml-2"><Icons.LogOut className="w-4 h-4"/></button>
-                                        </div>
-                                    ) : (
-                                        <button onClick={() => setShowHomeLogin(!showHomeLogin)} className="bg-slate-800 hover:bg-white/10 text-white font-bold py-2 px-6 rounded-xl border border-white/10 shadow-lg flex items-center gap-2 transition-colors">
-                                            <Icons.Lock className="w-4 h-4 text-orange-500"/> {showHomeLogin ? 'Close' : 'Member Access'}
-                                        </button>
-                                    )}
-                                </div>
-                                {showHomeLogin && !currentUser && (
-                                    <div className="animate-fade-in">
-                                        <AuthGate onGoogle={handleGoogleLogin} onEmail={handleEmailLogin} onSignUp={handleEmailSignUp} error={authError} />
-                                    </div>
-                                )}
-                                
-                                {/* --- METSSKY RESOURCE PAGE BUTTON --- */}
-                                <a href="https://www.qflea.com/LGM.html" target="_blank" className="block w-full glass-panel p-8 rounded-3xl text-center border-2 border-orange-500/50 hover:border-orange-400 hover:bg-white/5 transition-all group shadow-2xl shadow-orange-900/20 mb-8 relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="relative z-10">
-                                        <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-2 group-hover:scale-105 transition-transform">
-                                            METSSKY RESOURCE PAGE
-                                        </h2>
-                                        <div className="flex items-center justify-center gap-2 text-blue-400 font-bold uppercase tracking-widest text-sm md:text-base">
-                                            <Icons.Link className="w-5 h-5" /> Click to Visit
-                                        </div>
-                                    </div>
-                                </a>
-
-                                {/* --- 2025 THEME SONG --- */}
-                                <div className="glass-panel p-6 rounded-3xl border border-white/10 mb-8 animate-fade-in relative group">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="bg-blue-600 p-2 rounded-lg text-white">
-                                            <Icons.Tv className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-black text-white">2025 Mets Theme Song</h3>
-                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Queens State of Mind (Turn It Blue)</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black">
-                                        <iframe 
-                                            className="absolute top-0 left-0 w-full h-full"
-                                            /* 
-                                             * IMPORTANT: Replace 'PASTE_ID_HERE' below with your actual Video ID.
-                                             * Example: If link is youtube.com/watch?v=AbCdEfGh, put 'AbCdEfGh'
-                                             */
-                                            src="https://www.youtube.com/embed/6y7sf-y-Maw" 
-                                            title="2025 Mets Theme Song" 
-                                            frameBorder="0" 
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                            allowFullScreen
-                                        ></iframe>
-                                    </div>
-                                </div>
-
-                                <RandomMetRibbon currentUser={currentUser} />
-                                <div className="relative h-96 rounded-3xl overflow-hidden flex items-center justify-center bg-gradient-to-br from-blue-900 to-slate-900 border border-white/10 shadow-2xl group mt-8">
-                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-blue-900/20 to-slate-900/90"></div>
-                                    <div className="relative z-10 text-center px-4"><h1 className="text-6xl md:text-9xl font-black text-white tracking-tighter drop-shadow-2xl scale-95 group-hover:scale-100 transition-transform duration-500">LET'S GO <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 text-glow">METS</span></h1></div>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                     <button onClick={() => window.location.hash = 'random'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-pink-500/50 md:col-span-2">
-                                        <div className="p-4 bg-pink-500/20 rounded-2xl group-hover:scale-110 transition-transform shadow-lg shadow-pink-500/20"><Icons.Shuffle className="w-8 h-8 text-pink-400"/></div>
-                                        <div className="font-black text-white text-2xl uppercase tracking-wide">Random Met Series</div>
-                                     </button>
-                                     <a href="https://bsky.app/hashtag/MetsSky" target="_blank" className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-sky-500/50 md:col-span-2">
-                                        <div className="p-4 bg-sky-600 text-white rounded-2xl group-hover:scale-110 transition-transform shadow-lg shadow-sky-500/20 flex gap-2"><Icons.Cloud className="w-8 h-8"/></div><div className="font-black text-white text-2xl uppercase tracking-wide">#MetsSky</div>
-                                    </a>
-                                    <button onClick={() => window.location.hash = 'news'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-sky-500/50 md:col-span-2">
-                                        <div className="p-4 bg-sky-600 text-white rounded-2xl group-hover:scale-110 transition-transform shadow-lg shadow-sky-500/20 flex gap-2"><Icons.Newspaper className="w-8 h-8"/></div><div className="font-black text-white text-2xl uppercase tracking-wide">News Wire</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'blog'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-purple-500/50 md:col-span-2">
-                                        <div className="p-4 bg-purple-500/20 rounded-2xl group-hover:scale-110 transition-transform shadow-lg shadow-purple-500/20"><Icons.BookOpen className="w-8 h-8 text-purple-400"/></div><div className="font-black text-white text-2xl uppercase tracking-wide">MetsSky Blog</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'media'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-yellow-500/50">
-                                        <div className="p-4 bg-yellow-500/20 rounded-2xl group-hover:scale-110 transition-transform"><Icons.Tv className="w-8 h-8 text-yellow-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Media</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'schedule'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-blue-500/50">
-                                        <div className="p-4 bg-blue-500/20 rounded-2xl group-hover:scale-110 transition-transform"><Icons.Calendar className="w-8 h-8 text-blue-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Season Log</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'roster'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-orange-500/50">
-                                        <div className="p-4 bg-orange-500/20 rounded-2xl group-hover:scale-110 transition-transform"><Icons.Users className="w-8 h-8 text-orange-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Roster</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'moves'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-green-500/50">
-                                        <div className="p-4 bg-green-500/20 rounded-2xl group-hover:scale-110 transition-transform"><Icons.RefreshCw className="w-8 h-8 text-green-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Transactions</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'rants'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-red-500/50">
-                                        <div className="p-4 bg-red-500/20 rounded-2xl group-hover:scale-110 transition-transform shadow-lg shadow-red-500/20"><Icons.MessageSquare className="w-8 h-8 text-red-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Fan Zone</div>
-                                    </button>
-                                    <button onClick={() => window.location.hash = 'links'} className="glass-panel p-6 rounded-3xl text-center hover:bg-white/5 transition-all group flex flex-col items-center justify-center gap-3 h-48 border border-white/10 hover:border-cyan-500/50">
-                                        <div className="p-4 bg-cyan-500/20 rounded-2xl group-hover:scale-110 transition-transform"><Icons.Link className="w-8 h-8 text-cyan-400"/></div><div className="font-black text-white text-lg uppercase tracking-wide">Receipts</div>
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'news' && <NewsBoard news={news} />}
-                        
-                        {activeTab === 'blog' && (
-                            <BlogBoard 
-                                posts={blogPosts} 
-                                viewId={viewId} 
-                                currentUser={currentUser} 
-                                onAdd={addBlogPost}
-                                onUpdate={updateBlogPost}
-                                onDelete={deleteBlogPost} 
-                                onGoogle={handleGoogleLogin}
-                                onEmail={handleEmailLogin}
-                                onSignUp={handleEmailSignUp}
-                                authError={authError}
-                            />
-                        )}
-
-                        {activeTab === 'media' && <MediaBoard channels={channels} currentUser={currentUser} onAdd={addChannel} onDelete={deleteChannel} />}
-                        
-                        {activeTab === 'schedule' && (
-                            <div className="space-y-8 animate-fade-in">
-                                 <div className="flex flex-wrap items-center gap-4 mb-4">
-                                    <h2 className="text-2xl font-black text-white">Season Log</h2>
-                                    <div className="flex bg-slate-900/50 p-1 rounded-xl border border-white/10">
-                                        <button onClick={() => setScheduleMode('Regular')} className={`px-4 py-1 text-xs font-bold rounded-lg transition-all ${scheduleMode === 'Regular' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>Regular</button>
-                                        <button onClick={() => setScheduleMode('Spring')} className={`px-4 py-1 text-xs font-bold rounded-lg transition-all ${scheduleMode === 'Spring' ? 'bg-yellow-600 text-white' : 'text-slate-400 hover:text-white'}`}>Spring</button>
-                                    </div>
-                                 </div>
-                                 <div className="grid gap-3">
-                                     {(schedule2026 || []).filter(g => (g.gameType || 'Regular') === scheduleMode).map(game => (<ScheduleCard key={game.id} game={game} />))}
-                                     {(!schedule2026 || schedule2026.length === 0) && <div className="text-center text-slate-500">No games found.</div>}
-                                 </div>
-                            </div>
-                        )}
-                        
-                        {activeTab === 'roster' && (
-                            <RosterBoard 
-                                mlbRoster={mlbRoster} 
-                                players={players} 
-                                rosterMode={rosterMode} 
-                                setRosterMode={setRosterMode}
-                                currentUser={currentUser}
-                                onAddVibe={addVibe}
-                                onDeleteVibe={deleteVibe}
-                            />
-                        )}
-                        
-                        {activeTab === 'moves' && <MovesBoard transactions={apiTransactions} />}
-                        
-                        {activeTab === 'rants' && (
-                            <div className="space-y-8 animate-fade-in">
-                                <div className="glass-panel p-6 rounded-3xl border border-orange-500/30">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-black text-white">Fan Zone Message Board</h3>
-                                        {currentUser && <button onClick={handleLogout} className="text-xs text-red-400 flex items-center gap-2 hover:text-red-300"><Icons.LogOut className="w-4 h-4"/> Sign Out</button>}
-                                    </div>
-                                    {!currentUser ? (<AuthGate onGoogle={handleGoogleLogin} onEmail={handleEmailLogin} onSignUp={handleEmailSignUp} error={authError} />) : (
-                                        <form onSubmit={addRant} className="flex flex-col gap-4">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                {currentUser.photoURL ? (<img src={currentUser.photoURL} className="w-8 h-8 rounded-full border border-white/20"/>) : (<div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white text-xs">{(currentUser.displayName && currentUser.displayName[0]) ? currentUser.displayName[0] : (currentUser.email && currentUser.email[0] ? currentUser.email[0].toUpperCase() : 'U')}</div>)}
-                                                <span className="text-sm text-slate-400">Posting as <strong className="text-white">{currentUser.displayName || (currentUser.email && currentUser.email.split('@')[0]) || 'User'}</strong></span>
-                                            </div>
-                                            <div className="flex flex-col md:flex-row gap-4">
-                                                <input type="text" placeholder="Topic" className="bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white flex-1 focus:outline-none focus:border-orange-500" value={newRant.topic} onChange={e => setNewRant({...newRant, topic: e.target.value})} required />
-                                                <select className="bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white w-full md:w-auto focus:outline-none focus:border-orange-500" value={newRant.mood} onChange={e => setNewRant({...newRant, mood: e.target.value})}><option value="Neutral">Neutral</option><option value="Happy">Happy</option><option value="Angry">Angry</option></select>
-                                            </div>
-                                            <textarea placeholder="Let it all out..." className="bg-slate-900/50 border border-white/10 rounded-xl p-3 text-white h-32 focus:outline-none focus:border-orange-500" value={newRant.content} onChange={e => setNewRant({...newRant, content: e.target.value})} required />
-                                            <button type="submit" className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 rounded-xl shadow-lg">Post Rant</button>
-                                        </form>
-                                    )}
-                                </div>
-                                <div className="grid gap-4">
-                                    {rants.map(rant => (<RantCard key={rant.id} rant={rant} currentUser={currentUser} onDelete={deleteRant} />))}
-                                    {rants.length === 0 && <div className="text-center text-slate-500 py-12">No rants yet. Be the first!</div>}
-                                </div>
-                            </div>
-                        )}
-                        {activeTab === 'links' && <LinksBoard links={links} />}
-                        
-                        {activeTab === 'random' && <RandomSeriesBoard entries={randomMets} currentUser={currentUser} onAdd={addRandomMet} onDelete={deleteRandomMet} />}
-                    </div>
-                    <IOSInstallPrompt />
-                    <ChatBox />
-                    <HomeFloatingButton />
-                </div>
-            );
-        }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('MetsSky SW Registered'))
-                    .catch(err => console.log('SW Registration Failed: ', err));
-            });
-        }
     </script>
 </body>
 </html>
